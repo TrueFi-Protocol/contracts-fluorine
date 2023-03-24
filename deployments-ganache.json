@@ -1,0 +1,54 @@
+{
+  "ganache": {
+    "structuredAssetVault": {
+      "txHash": "0x4c6018904f3c22482ab2c860033b4f53666b0f67f1a97430d374fabe930afddb",
+      "address": "0xA193E42526F1FEA8C99AF609dcEabf30C1c29fAA",
+      "multisig": false
+    },
+    "fluorine_TrancheVault": {
+      "txHash": "0xddb8096bc635cbf4846d894287a3826f65eed84ec55d2e2b7773c2322e2591b0",
+      "address": "0xFDFEF9D10d929cB3905C71400ce6be1990EA0F34",
+      "multisig": false
+    },
+    "fluorine_protocolConfig": {
+      "txHash": "0x7dc741b8752535455b2144108253a5f73b485817bc7318af9e26e068080c9659",
+      "address": "0xaC8444e7d45c34110B34Ed269AD86248884E78C7",
+      "multisig": false
+    },
+    "fluorine_protocolConfig_proxy": {
+      "txHash": "0xe45041abbcbb084979194b73b716b12d3e36e9dca503e6a6e6ec06a7b5b6d5ae",
+      "address": "0x94BA4d5Ebb0e05A50e977FFbF6e1a1Ee3D89299c",
+      "multisig": false
+    },
+    "structuredAssetVaultFactory": {
+      "txHash": "0x1dc6965d0b230dfdcbeef9efbee8280de59462e2f6279e9b285063350e62b2fb",
+      "address": "0xFf807885934003A35b1284d7445fc83Fd23417e5",
+      "multisig": false
+    },
+    "fluorine_defaultDepositController": {
+      "txHash": "0x5d86fff6e27afe81be0a1c37eff5339c9dc357f1ec7b0cfbb76c5afd143974e3",
+      "address": "0xD756fb6A081CC11e7F513C39399DB296b1DE3036",
+      "multisig": false
+    },
+    "fluorine_defaultWithdrawController": {
+      "txHash": "0x9b7f50083677e150623af03301fad250e4278edeab6ecbfc7fe77d77c253e388",
+      "address": "0x956dA338C1518a7FB213042b70c60c021aeBd554",
+      "multisig": false
+    },
+    "fluorine_defaultTransferController": {
+      "txHash": "0xb157b90ad72003b7bde18c7b74c972a4d33bb37fd8d26b7abcd7215365484d43",
+      "address": "0xdCCc660F92826649754E357b11bd41C31C0609B9",
+      "multisig": false
+    },
+    "allowAllLenderVerifier": {
+      "txHash": "0x97f70a1277e6969e997ccb45b17248e50c43fcf8544e946d8c3b1a363ef0c041",
+      "address": "0x84e924C5E04438D2c1Df1A981f7E7104952e6de1",
+      "multisig": false
+    },
+    "mockUsdc": {
+      "txHash": "0xc9f496b0bacd81e7a8a59bb91f153418a571aab8c16f61a6220d3fb46ea82cf3",
+      "address": "0x33d1D66019695D05B0a92694A5d86Df91cb73e80",
+      "multisig": false
+    }
+  }
+}

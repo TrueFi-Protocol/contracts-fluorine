@@ -1,0 +1,7 @@
+{
+  "hardhat_artifacts_directory": "build",
+  "filter_paths": "mocks",
+  "exclude_informational": true,
+  "exclude_low": true,
+  "exclude_dependencies": true
+}
