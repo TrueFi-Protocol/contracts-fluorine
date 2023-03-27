@@ -177,8 +177,9 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         uint256[] memory waterfall = _calculateWaterfallWithoutFees(assetsLeft);
         uint256[] memory fees = new uint256[](tranches.length);
         for (uint256 i = 0; i < waterfall.length; i++) {
-            uint256 pendingFees = tranches[i].totalPendingFeesForAssets(waterfall[i]);
-            waterfall[i] = _saturatingSub(waterfall[i], pendingFees);
+            uint256 waterfallValue = waterfall[i];
+            uint256 pendingFees = tranches[i].totalPendingFeesForAssets(waterfallValue);
+            waterfall[i] = _saturatingSub(waterfallValue, pendingFees);
             fees[i] = pendingFees;
         }
         return (waterfall, fees);
@@ -417,11 +418,13 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         (uint256[] memory waterfall, ) = _calculateWaterfall(virtualTokenBalance);
 
         for (uint256 i = 0; i < waterfall.length; i++) {
+            TrancheData storage trancheData = tranchesData[i];
             if (i != 0) {
-                tranchesData[i].maxValueOnClose = _assumedTrancheValue(i, limitedBlockTimestamp);
+                trancheData.maxValueOnClose = _assumedTrancheValue(i, limitedBlockTimestamp);
             }
-            tranchesData[i].distributedAssets = waterfall[i];
-            _transfer(tranches[i], waterfall[i]);
+            uint256 waterfallValue = waterfall[i];
+            trancheData.distributedAssets = waterfallValue;
+            _transfer(tranches[i], waterfallValue);
         }
     }
 
