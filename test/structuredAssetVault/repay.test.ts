@@ -20,7 +20,7 @@ describe('StructuredAssetVault.repay', () => {
 
     await disburse(outstandingPrincipal)
 
-    return { ...fixtureResult }
+    return fixtureResult
   }
 
   it('only repayer', async () => {

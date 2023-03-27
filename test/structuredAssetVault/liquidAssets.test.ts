@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { assetVaultFixture } from 'fixtures/assetVaultFixture'
+import { assetVaultFixture, assetVaultLiveFixture } from 'fixtures/assetVaultFixture'
 import { setupFixtureLoader } from 'test/setup'
 import { YEAR } from 'utils/constants'
 import { timeTravelAndMine } from 'utils/timeTravel'
@@ -31,5 +31,12 @@ describe('StructuredAssetVault.liquidAssets', () => {
 
     const delta = parseTokenUnits(0.00001)
     expect(await assetVault.liquidAssets()).to.be.closeTo(depositAmount.sub(accruedFee), delta)
+  })
+
+  it('returns correct value after disburse', async () => {
+    const { disburse, totalDeposit, parseTokenUnits, assetVault } = await loadFixture(assetVaultLiveFixture)
+    const disbursedAmount = parseTokenUnits(1e6)
+    await disburse(disbursedAmount)
+    expect(await assetVault.liquidAssets()).to.eq(totalDeposit.sub(disbursedAmount))
   })
 })
