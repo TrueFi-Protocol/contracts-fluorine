@@ -37,7 +37,8 @@ export const getAssetVaultFactoryFixture = (fixtureConfig?: Partial<FixtureConfi
 
     const { token, parseTokenUnits } = await deployToken(wallets, tokenDecimals)
     const { protocolConfig, protocolConfigParams } = await deployProtocolConfig(wallets)
-    const { assetVaultFactory, whitelistedManagerRole } = await deployAssetVaultFactory(wallet, protocolConfig)
+    const { assetVaultFactory, whitelistedManagerRole, trancheVaultImplementation, assetVaultImplementation } =
+      await deployAssetVaultFactory(wallet, protocolConfig)
     const { depositController, withdrawController, transferController } = await deployControllers(wallet)
     const lenderVerifier = await new MockLenderVerifier__factory(wallet).deploy()
 
@@ -186,6 +187,8 @@ export const getAssetVaultFactoryFixture = (fixtureConfig?: Partial<FixtureConfi
       createAssetVault,
       createAssetVaultAndSetupControllers,
       lenderVerifier,
+      trancheVaultImplementation,
+      assetVaultImplementation,
     }
   }
 }

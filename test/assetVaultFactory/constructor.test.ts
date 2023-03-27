@@ -10,4 +10,19 @@ describe('StructuredAssetVaultFactory.constructor', () => {
     const adminRole = await assetVaultFactory.DEFAULT_ADMIN_ROLE()
     expect(await assetVaultFactory.hasRole(adminRole, wallet.address)).to.be.true
   })
+
+  it('sets tranche implementation', async () => {
+    const { assetVaultFactory, trancheVaultImplementation } = await loadFixture(assetVaultFactoryFixture)
+    expect(await assetVaultFactory.trancheImplementation()).to.eq(trancheVaultImplementation.address)
+  })
+
+  it('sets asset vault implementation', async () => {
+    const { assetVaultFactory, assetVaultImplementation } = await loadFixture(assetVaultFactoryFixture)
+    expect(await assetVaultFactory.assetVaultImplementation()).to.eq(assetVaultImplementation.address)
+  })
+
+  it('sets protocol config', async () => {
+    const { assetVaultFactory, protocolConfig } = await loadFixture(assetVaultFactoryFixture)
+    expect(await assetVaultFactory.protocolConfig()).to.eq(protocolConfig.address)
+  })
 })
