@@ -52,6 +52,17 @@ describe('StructuredAssetVault.disburse', () => {
       await startAndCloseAssetVault()
       await expect(disburse(principal)).to.be.revertedWith('SAV: AssetVault is not live')
     })
+
+    it('Live', async () => {
+      const { disburse } = await loadFixture(assetVaultLiveFixture)
+      await expect(disburse(principal)).not.to.be.reverted
+    })
+  })
+
+  it('reverts if has not enough funds', async () => {
+    const { disburse, assetVault } = await loadFixture(assetVaultLiveFixture)
+    const amount = (await assetVault.virtualTokenBalance()).add(1)
+    await expect(disburse(amount)).to.be.revertedWith('SAV: Insufficient funds')
   })
 
   it('increases outstanding principal', async () => {
