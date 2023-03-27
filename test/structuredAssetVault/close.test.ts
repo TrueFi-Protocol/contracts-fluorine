@@ -81,11 +81,6 @@ describe('StructuredAssetVault.close', () => {
     await expect(assetVault.connect(other).close()).to.be.revertedWith("SAV: Can't close before end date")
   })
 
-  it("user can't close before deadline", async () => {
-    const { assetVault, other } = await loadFixture(assetVaultLiveFixture)
-    await expect(assetVault.connect(other).close()).to.be.revertedWith("SAV: Can't close before end date")
-  })
-
   it('user can close after end date', async () => {
     const { assetVault, other, AssetVaultStatus, assetVaultDuration, assetVaultStartTimestamp } = await loadFixture(
       assetVaultLiveFixture
@@ -253,6 +248,11 @@ describe('StructuredAssetVault.close', () => {
 
       expect(balanceAfter).to.eq(balanceBefore)
       await expect(Promise.resolve(tx)).to.not.emit(token, 'Transfer')
+    })
+
+    it("user can't close before deadline", async () => {
+      const { assetVault, other } = await loadFixture(assetVaultFixture)
+      await expect(assetVault.connect(other).close()).to.be.revertedWith('SAV: Only after start deadline')
     })
 
     it('user can close after deadline', async () => {

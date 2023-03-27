@@ -1,5 +1,5 @@
 import { expect } from 'chai'
-import { assetVaultFixture } from 'fixtures/assetVaultFixture'
+import { assetVaultFixture, assetVaultLiveFixture } from 'fixtures/assetVaultFixture'
 import { setupFixtureLoader } from 'test/setup'
 import { getTxTimestamp } from 'utils/timestamp'
 import { percentOf } from 'utils/percentOf'
@@ -14,10 +14,22 @@ describe('StructuredAssetVault.start', () => {
     expect(await assetVault.status()).to.eq(AssetVaultStatus.Live)
   })
 
-  it('only in capital formation', async () => {
-    const { assetVault } = await loadFixture(assetVaultFixture)
-    await assetVault.start()
-    await expect(assetVault.start()).to.be.revertedWith('SAV: Only in capital formation')
+  describe('only in Capital Formation status', () => {
+    it('reverts in Live', async () => {
+      const { assetVault } = await loadFixture(assetVaultLiveFixture)
+      await expect(assetVault.start()).to.be.revertedWith('SAV: Only in capital formation')
+    })
+
+    it('reverts in Closed', async () => {
+      const { assetVault } = await loadFixture(assetVaultLiveFixture)
+      await assetVault.close()
+      await expect(assetVault.start()).to.be.revertedWith('SAV: Only in capital formation')
+    })
+
+    it('passes in CapitalFormation', async () => {
+      const { assetVault } = await loadFixture(assetVaultFixture)
+      await expect(assetVault.start()).not.to.be.reverted
+    })
   })
 
   it('only manager', async () => {

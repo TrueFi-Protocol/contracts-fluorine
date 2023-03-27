@@ -400,7 +400,7 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
             require(isManager || isAfterEndDate, "SAV: Can't close before end date");
             _closeTranches();
         } else {
-            require(isManager || block.timestamp >= startDeadline, "SAV: Can't close before end date");
+            require(isManager || block.timestamp >= startDeadline, "SAV: Only after start deadline");
         }
 
         _changeAssetVaultStatus(Status.Closed);
