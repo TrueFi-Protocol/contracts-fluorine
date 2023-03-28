@@ -38,7 +38,7 @@ describe('StructuredAssetVaultFactory.setAllowedBorrower', () => {
     expect(await assetVaultFactory.getAllowedBorrowers(wallet.address)).to.deep.eq([other.address, another.address])
   })
 
-  it('can disallow borrowers', async () => {
+  it('can disallow borrower', async () => {
     const {
       assetVaultFactory,
       wallet,

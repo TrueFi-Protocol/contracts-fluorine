@@ -1,8 +1,9 @@
 import { ContractTransaction } from 'ethers'
-import { assetVaultLiveFixture } from 'fixtures/assetVaultFixture'
+import { assetVaultFixture, assetVaultLiveFixture } from 'fixtures/assetVaultFixture'
 import { assetVaultFactoryFixture } from 'fixtures/assetVaultFactoryFixture'
 import { timeTravel } from 'utils/timeTravel'
 import { setupFixtureLoader } from './setup'
+import { YEAR } from 'utils/constants'
 
 const numberWithCommas = (x: string) => x.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
 
@@ -129,6 +130,22 @@ describe('Gas cost', () => {
         const { updateState, parseTokenUnits } = await loadFixture(assetVaultLiveFixture)
         await updateState(parseTokenUnits(1e6))
         testedTx = await updateState(0)
+      })
+
+      it('start', async () => {
+        const { assetVaultStartTx } = await loadFixture(assetVaultLiveFixture)
+        testedTx = assetVaultStartTx
+      })
+
+      it('close (in Capital Formation)', async () => {
+        const { assetVault } = await loadFixture(assetVaultFixture)
+        testedTx = await assetVault.close()
+      })
+
+      it('close (in Live)', async () => {
+        const { assetVault } = await loadFixture(assetVaultLiveFixture)
+        await timeTravel(YEAR)
+        testedTx = await assetVault.close()
       })
     })
   })
