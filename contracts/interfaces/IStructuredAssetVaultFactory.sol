@@ -56,6 +56,11 @@ interface IStructuredAssetVaultFactory is IAccessControlEnumerable {
      */
     event AssetVaultCreated(IStructuredAssetVault indexed newAssetVault, address indexed manager, ITrancheVault[] tranches);
 
+    /**
+     * @notice Event fired when list of allowed borrowers for specific manager is changed
+     * @param manager Manager address
+     * @param allowedBorrowers List of allowed borrowers associated with the manager
+     */
     event AllowedBorrowersChanged(address indexed manager, address[] allowedBorrowers);
 
     /// @return Whitelisted manager role used for access control, allowing a user with this role to create StructuredAssetVault

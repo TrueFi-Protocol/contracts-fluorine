@@ -1,11 +1,17 @@
 import '@typechain/hardhat'
 import 'hardhat-waffle-dev'
+import 'solidity-docgen'
 import './abi-exporter'
 
 import mocharc from './.mocharc.json'
 import compiler from './.compiler.json'
 
 module.exports = {
+  docgen: {
+    pages: 'files',
+    templates: './templates',
+    exclude: ['mocks', 'proxy', 'test'],
+  },
   paths: {
     sources: './contracts',
     artifacts: './build',
