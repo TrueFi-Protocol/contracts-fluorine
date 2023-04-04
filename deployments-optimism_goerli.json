@@ -1,8 +1,8 @@
 {
   "optimism_goerli": {
     "structuredAssetVault": {
-      "txHash": "0xdbc16f53023119b5cc6ce47f978839bf62e0370faf03c0ccc7800511cfd9305e",
-      "address": "0xB8F48002Bd2a290952691245F43d1c565F188412",
+      "txHash": "0x0fce1c5be8f923260c92a80dace71ef4f324e5a998c46a9f612ddc540d458ab7",
+      "address": "0xfB1b466Def0dDc77896dbC39478044A575ab5F8e",
       "multisig": false
     },
     "fluorine_TrancheVault": {
@@ -11,8 +11,8 @@
       "multisig": false
     },
     "structuredAssetVaultFactory": {
-      "txHash": "0xe2fd599ad7149740479935e9c33063f16e584ea67ee72be0b2ae13c3bf7fb300",
-      "address": "0x4faDc5f5e0418b1F00748544fD6E32a14C85C3f7",
+      "txHash": "0x86c351023715162cf3b3a117a69201ed10109a6ad1886c8238e101498ca1c78e",
+      "address": "0xA15fD357B7241de7219E661c4332a8264d26B9E8",
       "multisig": false
     },
     "fluorine_defaultDepositController": {
