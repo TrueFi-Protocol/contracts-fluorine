@@ -1,0 +1,31 @@
+{
+  "zksync_testnet": {
+    "structuredAssetVault": {
+      "address": "0x2eE701caEB21990a451a346CB1BD233c7723D710"
+    },
+    "fluorine_TrancheVault": {
+      "address": "0x7fBC5293dddC3dE0a4c9934D58b2C21f446b94b1"
+    },
+    "structuredAssetVaultFactory": {
+      "address": "0x06B311837a6b5e6553065e9a5B78744570553ac1"
+    },
+    "fluorine_defaultDepositController": {
+      "address": "0x4179D0d01711011C8db6a9B59125Df7Db2991CA3"
+    },
+    "fluorine_defaultWithdrawController": {
+      "address": "0x9B638548a221d22Cc365302956f7d4B17df31214"
+    },
+    "fluorine_defaultTransferController": {
+      "address": "0xAd7C81D03Fc894e6d8b012C7A7B26D56Bb135773"
+    },
+    "allowAllLenderVerifier": {
+      "address": "0x7027D6661E5C979F742027Eacda6f177f932D5BB"
+    },
+    "fluorine_protocolConfig": {
+      "address": "0xfba874050a343236D7709618D30D43de873fAD51"
+    },
+    "fluorine_protocolConfig_proxy": {
+      "address": "0x86341784d7b637C754D30b2ea5778cCB05E7646B"
+    }
+  }
+}

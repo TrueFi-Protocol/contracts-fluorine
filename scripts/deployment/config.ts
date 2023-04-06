@@ -3,15 +3,15 @@ import { Wallet } from "ethers"
 
 const ganacheDeployer = new Wallet(defaultAccounts[0].secretKey).address
 
-interface Config {
-  protocolConfig: Record<string, ProtocolConfig>
-}
-
 interface ProtocolConfig {
   defaultProtocolFeeRate: number
   protocolAdmin: string
   protocolTreasury: string
   pauserAddress: string
+}
+
+interface Config {
+  protocolConfig: Record<string, ProtocolConfig>
 }
 
 export const config: Config = {
@@ -40,5 +40,11 @@ export const config: Config = {
       protocolTreasury: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
       pauserAddress: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
     },
+    zkSyncTestnet: {
+      defaultProtocolFeeRate: 0,
+      protocolAdmin: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
+      protocolTreasury: '0x715C72ea89CD250890714467963b0F9774FF2520',
+      pauserAddress: '0x715C72ea89CD250890714467963b0F9774FF2520'
+    }
   },
 }
