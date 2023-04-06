@@ -26,6 +26,18 @@
     },
     "fluorine_protocolConfig_proxy": {
       "address": "0x86341784d7b637C754D30b2ea5778cCB05E7646B"
+    },
+    "structuredPortfolioFactory": {
+      "address": "0x0000000000000000000000000000000000000000"
+    },
+    "structuredIndexedPortfolioFactory": {
+      "address": "0x0000000000000000000000000000000000000000"
+    },
+    "fixedInterestOnlyLoan": {
+      "address": "0x0000000000000000000000000000000000000000"
+    },
+    "vaultsRegistry_proxy": {
+      "address": "0x0000000000000000000000000000000000000000"
     }
   }
 }
