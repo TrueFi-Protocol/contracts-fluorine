@@ -15,6 +15,9 @@
     "build": "pnpm clean && pnpm build:hardhat && pnpm build:abi && pnpm build:typechain && pnpm build:mars && pnpm build:merge-deployments",
     "deployFluorine": "bash ./bash/guardedRun.sh",
     "deployZkSync": "hardhat deploy-zksync --config hardhat.zksync.config.ts",
+    "fuzz": "./fuzzing/fuzz.py",
+    "fuzz:check": "./fuzzing/fuzz.py --test-limit 1",
+    "fuzz:explore": "rm -rf echidna-corpus/ && echidna-test . --test-mode exploration --test-limit 1000",
     "test": "mocha 'test/**/*.test.ts'",
     "lint:fix": "prettier 'contracts/**/*.sol' '{test,deploy}/**/*.ts' --write --loglevel error && pnpm run lint:ts --fix",
     "lint:sol": "solhint 'contracts/**/*.sol' && prettier 'contracts/**/*.sol' --check --loglevel error",
@@ -26,6 +29,7 @@
     "analyze": "slither ."
   },
   "devDependencies": {
+    "@crytic/properties": "github:crytic/properties",
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/bytes": "^5.7.0",
     "@ethersproject/providers": "^5.7.0",

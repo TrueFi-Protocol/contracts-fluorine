@@ -54,13 +54,13 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
 
     function initialize(
         address manager,
-        address[] calldata allowedBorrowers,
+        address[] memory allowedBorrowers,
         IERC20WithDecimals _asset,
         IProtocolConfig _protocolConfig,
-        AssetVaultParams calldata assetVaultParams,
-        TrancheInitData[] calldata tranchesInitData,
-        ExpectedEquityRate calldata _expectedEquityRate
-    ) external initializer {
+        AssetVaultParams memory assetVaultParams,
+        TrancheInitData[] memory tranchesInitData,
+        ExpectedEquityRate memory _expectedEquityRate
+    ) public initializer {
         __Upgradeable_init(_protocolConfig.protocolAdmin(), _protocolConfig);
 
         require(assetVaultParams.duration > 0, "SAV: Duration cannot be zero");
