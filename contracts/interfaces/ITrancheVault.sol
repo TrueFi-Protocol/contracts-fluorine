@@ -200,7 +200,7 @@ interface ITrancheVault is IERC4626Upgradeable, IERC165 {
      * @notice Updates TrancheVault checkpoint with total assets value calculated in StructuredAssetVault waterfall
      * @dev
      * - can be executed only by associated StructuredAssetVault
-     * - is used by StructuredAssetVault only in Live portfolio status
+     * - is used by StructuredAssetVault only in Live and Closed portfolio statuses
      * @param _totalAssets Total assets amount to save in the checkpoint
      */
     function updateCheckpointFromPortfolio(uint256 _totalAssets, uint256 deficit) external;

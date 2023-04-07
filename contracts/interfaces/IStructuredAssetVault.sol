@@ -198,27 +198,27 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
 
     /**
      * @notice Distributes AssetVault value among tranches respecting their target apys and fees.
-     * Returns zeros for CapitalFormation and Closed AssetVault status.
+     * Returns deposits for CapitalFormation and Closed AssetVault status.
      * @return Array of current tranche values
      */
     function calculateWaterfall() external view returns (uint256[] memory);
 
     /**
      * @notice Distributes AssetVault value among tranches respecting their target apys, but not fees.
-     * Returns zeros for CapitalFormation and Closed AssetVault status.
+     * Returns deposits for CapitalFormation and Closed AssetVault status.
      * @return Array of current tranche values (with pending fees not deducted)
      */
     function calculateWaterfallWithoutFees() external view returns (uint256[] memory);
 
     /**
      * @param trancheIndex Index of tranche
-     * @return Current value of tranche in Live status, 0 for other statuses
+     * @return Current value of tranche in Live status, equal to deposit for other statuses
      */
     function calculateWaterfallForTranche(uint256 trancheIndex) external view returns (uint256);
 
     /**
      * @param trancheIndex Index of tranche
-     * @return Current value of tranche (with pending fees not deducted) in Live status, 0 for other statuses
+     * @return Current value of tranche (with pending fees not deducted) in Live status, equal to deposit for other statuses
      */
     function calculateWaterfallForTrancheWithoutFee(uint256 trancheIndex) external view returns (uint256);
 
@@ -226,7 +226,7 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * @notice Setup contract with given params
      * @dev Used by Initializable contract (can be called only once)
      * @param manager Address on which MANAGER_ROLE is granted
-     * @param allowedBorrowers List of addresses on which BORROWER_ROLE should be granted
+     * @param allowedBorrowers List of addresses on which BORROWER_ROLE should be granted, [address(0)] if all borrowers are allowed
      * @param asset Address of ERC20 token used by AssetVault
      * @param protocolConfig Address of ProtocolConfig contract
      * @param assetVaultParams Parameters to configure AssetVault
@@ -260,7 +260,7 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
 
     /**
      * @notice Updates checkpoints on each tranche and pay pending fees
-     * @dev Can be executed only in Live status
+     * @dev Can be executed only in Live and Closed status
      */
     function updateCheckpoints() external;
 
