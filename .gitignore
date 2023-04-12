@@ -1,2 +1,3 @@
 deployments-test.json
 build-zk
+.certora_internal
