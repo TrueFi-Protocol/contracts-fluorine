@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import {AccessControlEnumerableUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import {AccessControlEnumerableUpgradeable, AccessControlUpgradeable, IAccessControlUpgradeable} from "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import {UUPSUpgradeable} from "@openzeppelin/contracts/proxy/utils/UUPSUpgradeable.sol";
 import {PausableUpgradeable} from "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 import {IProtocolConfig} from "../interfaces/IProtocolConfig.sol";
@@ -21,6 +21,13 @@ abstract contract Upgradeable is AccessControlEnumerableUpgradeable, UUPSUpgrade
     }
 
     function _authorizeUpgrade(address) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
+
+    function renounceRole(bytes32 role, address account) public override(AccessControlUpgradeable, IAccessControlUpgradeable) {
+        // By default, AccessControl.renounceRole() silently returns when an account does not have
+        // the role it is renouncing. This changes the behavior to a revert.
+        _checkRole(role, msg.sender);
+        super.renounceRole(role, account);
+    }
 
     function pause() external {
         _requirePauser();
