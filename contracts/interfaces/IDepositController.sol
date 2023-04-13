@@ -4,9 +4,9 @@
 
 // Parameters
 // Licensor: TrueFi Foundation Ltd.
-// Licensed Work: Structured Credit Vaults. The Licensed Work is (c) 2022 TrueFi Foundation Ltd.
-// Additional Use Grant: Any uses listed and defined at this [LICENSE](https://github.com/trusttoken/contracts-carbon/license.md)
-// Change Date: December 31, 2025
+// Licensed Work: Structured Asset Vaults. The Licensed Work is (c) 2023 TrueFi Foundation Ltd.
+// Additional Use Grant: Any uses listed and defined at this [LICENSE](https://github.com/trusttoken/contracts-fluorine/license.md)
+// Change Date: December 31, 2030
 // Change License: MIT
 
 pragma solidity ^0.8.18;
