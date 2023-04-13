@@ -14,10 +14,10 @@ def shell(cmd):
     return result
 
 def build_docker():
-    shell(f"docker build -f fuzzing/docker/Dockerfile . -t fuzz_carbon")
+    shell(f"docker build -f fuzzing/docker/Dockerfile ../.. -t fuzz_fluorine")
 
 def spawn_single_container(conf):
-    output = shell(f"docker run --rm -e HOST_USER=$(id -u) -v {os.getcwd()}/echidna-corpus:/root/echidna-corpus fuzz_carbon {' '.join(conf)}")
+    output = shell(f"docker run --rm -e HOST_USER=$(id -u) -v {os.getcwd()}/echidna-corpus:/root/truefi/packages/contracts-fluorine/echidna-corpus fuzz_fluorine {' '.join(conf)}")
     if re.search("passed!", output) is None:
         exit(1)
     shell(f"rm -rf echidna-corpus/coverage")
