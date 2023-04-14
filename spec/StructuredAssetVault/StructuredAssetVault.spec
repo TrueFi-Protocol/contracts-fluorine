@@ -6,7 +6,9 @@ using StructuredAssetVault as sav
 methods {
     getRoleAdmin(bytes32) returns bytes32 envfree
     hasRole(bytes32, address) returns bool envfree
+    paused() returns bool envfree
     status() returns sav.Status envfree
+    tranches(uint256) returns address envfree
 
     BORROWER_ROLE() returns bytes32 envfree
     DEFAULT_ADMIN_ROLE() returns bytes32 envfree
@@ -35,6 +37,9 @@ definition isUpgradeFunction(method f) returns bool =
     f.selector == upgradeTo(address).selector ||
     f.selector == upgradeToAndCall(address,bytes).selector;
 
+definition isInitialize(method f) returns bool =
+    f.selector == initialize(address,address[],address,address,(string,uint256,uint256,uint256),(address,uint128,uint128)[],(uint256,uint256)).selector;
+
 definition isRoleAdminOnlyFunction(method f) returns bool =
     f.selector == grantRole(bytes32,address).selector ||
     f.selector == revokeRole(bytes32,address).selector;
@@ -54,7 +59,6 @@ definition isNonRoleRequiredFunction(method f) returns bool =
     f.selector == close().selector ||
     f.selector == decreaseVirtualTokenBalance(uint256).selector ||
     f.selector == increaseVirtualTokenBalance(uint256).selector ||
-    f.selector == initialize(address,address[],address,address,(string,uint256,uint256,uint256),(address,uint128,uint128)[],(uint256,uint256)).selector ||
     f.selector == pause().selector ||
     f.selector == unpause().selector ||
     f.selector == updateCheckpoints().selector;
