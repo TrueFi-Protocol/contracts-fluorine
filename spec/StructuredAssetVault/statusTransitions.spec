@@ -1,12 +1,4 @@
-import "StructuredAssetVault.spec"
-
-methods {
-    totalAssets() => AUTO
-    totalAssetsBeforeFees() => AUTO
-    totalPendingFeesForAssets(uint256) => AUTO
-    // Unsound: AUTO => HAVOC_ECF can change virtualTokenBalance when paying fees
-    updateCheckpointFromPortfolio(uint256, uint256) => AUTO
-}
+import "StructuredAssetVault_AUTO_summaries.spec"
 
 rule nothingElseTransitionsToCapitalFormation(method f) filtered { f -> !isUpgradeFunction(f) } {
     sav.Status status_old = status();
