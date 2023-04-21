@@ -18,6 +18,13 @@ describe('StructuredAssetVault.disburse', () => {
     await expect(disburse(principal, { sender: other })).to.be.revertedWith('SAV: Only manager')
   })
 
+  it('reverts when sent to SAV', async () => {
+    const { assetVault, assetReportId } = await loadFixture(assetVaultLiveFixture)
+    await expect(assetVault.disburse(assetVault.address, principal, principal, assetReportId)).to.be.revertedWith(
+      'SAV: Recipient cannot be SAV'
+    )
+  })
+
   it('can send only to allowed borrower when whitelist is enabled', async () => {
     const { other, createAssetVault, assetReportId } = await loadFixture(assetVaultLiveFixture)
     const { assetVault } = await createAssetVault({ onlyAllowedBorrowers: true })

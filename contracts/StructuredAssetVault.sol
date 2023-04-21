@@ -460,6 +460,7 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         string calldata newAssetReportId
     ) external whenNotPaused {
         _requireManagerRole();
+        require(recipient != address(this), "SAV: Recipient cannot be SAV");
         if (onlyAllowedBorrowers) {
             require(hasRole(BORROWER_ROLE, recipient), "SAV: Recipient not whitelisted");
         }
@@ -484,6 +485,7 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         string calldata newAssetReportId
     ) external whenNotPaused {
         address repayer = msg.sender;
+        assert(repayer != address(this));
         require(hasRole(REPAYER_ROLE, repayer), "SAV: Only repayer");
         require(status != Status.CapitalFormation, "SAV: Can repay only after start");
         require(principalRepaid <= outstandingPrincipal, "SAV: Principal overpayment");
