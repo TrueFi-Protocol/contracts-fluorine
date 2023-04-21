@@ -32,6 +32,7 @@ import {AddLoanParams} from "contracts-carbon/contracts/LoansManager.sol";
 import {MockToken} from "contracts-carbon/contracts/mocks/MockToken.sol";
 
 import {FuzzingLender} from "./FuzzingLender.sol";
+import {FuzzingBorrower} from "./FuzzingBorrower.sol";
 import {FuzzingManager} from "./FuzzingManager.sol";
 
 uint256 constant DAY = 1 days;
@@ -39,6 +40,7 @@ uint256 constant DAY = 1 days;
 contract StructuredAssetVaultFuzzingInit {
     MockToken public token;
     FuzzingLender public lender;
+    FuzzingBorrower public borrower;
     FuzzingManager public manager;
 
     IProtocolConfig public protocolConfig;
@@ -46,7 +48,7 @@ contract StructuredAssetVaultFuzzingInit {
     ITrancheVault public equityTranche;
     ITrancheVault public juniorTranche;
     ITrancheVault public seniorTranche;
-    IStructuredAssetVault public structuredAssetVault;
+    StructuredAssetVaultTest2 public structuredAssetVault;
 
     uint256 internal constant FEE_RATE = (BASIS_PRECISION * 5) / 1000;
 
@@ -179,9 +181,12 @@ contract StructuredAssetVaultFuzzingInit {
             0 /* minSubordinateRatio */
         );
 
+        address[] memory allowedBorrowers = new address[](1);
+        allowedBorrowers[0] = address(borrower);
+
         structuredAssetVault = new StructuredAssetVaultTest2(
             address(manager), /* manager */
-            new address[](1), /* allowedBorrowers */
+            allowedBorrowers,
             IERC20WithDecimals(address(token)),
             IProtocolConfig(address(protocolConfig)),
             assetVaultParams,

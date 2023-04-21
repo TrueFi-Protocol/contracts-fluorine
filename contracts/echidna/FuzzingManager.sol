@@ -32,6 +32,26 @@ contract FuzzingManager {
         withdrawController.setWithdrawAllowed(newWithdrawAllowed, portfolioStatus);
     }
 
+    function repay(
+        IStructuredAssetVault structuredAssetVault,
+        uint256 principalRepaid,
+        uint256 interestRepaid,
+        uint256 newOutstandingAssets,
+        string calldata newAssetReportId
+    ) public {
+        structuredAssetVault.repay(principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
+    }
+
+    function disburse(
+        IStructuredAssetVault structuredAssetVault,
+        address recipient,
+        uint256 amount,
+        uint256 newOutstandingAssets,
+        string calldata newAssetReportId
+    ) external {
+        structuredAssetVault.disburse(recipient, amount, newOutstandingAssets, newAssetReportId);
+    }
+
     function start(IStructuredAssetVault structuredAssetVault) public {
         structuredAssetVault.start();
     }

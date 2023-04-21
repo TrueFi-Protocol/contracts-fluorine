@@ -30,4 +30,8 @@ contract StructuredAssetVaultTest2 is StructuredAssetVault {
     ) {
         initialize(manager, allowedBorrowers, _asset, _protocolConfig, assetVaultParams, tranchesInitData, _expectedEquityRate);
     }
+
+    function assumedTrancheValue(uint256 trancheIdx) external view returns (uint256) {
+        return _assumedTrancheValue(trancheIdx, _limitedBlockTimestamp());
+    }
 }

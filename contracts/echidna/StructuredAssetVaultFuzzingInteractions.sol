@@ -12,9 +12,60 @@
 pragma solidity ^0.8.18;
 
 import {StructuredAssetVaultFuzzingInit} from "./StructuredAssetVaultFuzzingInit.sol";
+import {Status} from "../interfaces/IStructuredAssetVault.sol";
 
 uint256 constant DAY = 1 days;
 
 contract StructuredAssetVaultFuzzingInteractions is StructuredAssetVaultFuzzingInit {
-    // TODO
+    uint256 internal previousTotalAssets;
+    Status internal previousStatus;
+
+    constructor() {
+        previousStatus = structuredAssetVault.status();
+        previousTotalAssets = structuredAssetVault.totalAssets();
+    }
+
+    function updateTotalAssets() public {
+        previousTotalAssets = structuredAssetVault.totalAssets();
+    }
+
+    function updatePreviousStatus() public {
+        previousStatus = structuredAssetVault.status();
+    }
+
+    function updateCheckpoints() public {
+        structuredAssetVault.updateCheckpoints();
+    }
+
+    function disburse(
+        uint256 rawAmount,
+        uint256 newOutstandingAssets,
+        string calldata newAssetReportId
+    ) public {
+        uint256 amount = rawAmount % structuredAssetVault.virtualTokenBalance();
+        manager.disburse(structuredAssetVault, address(borrower), amount, newOutstandingAssets, newAssetReportId);
+    }
+
+    function repay(
+        uint256 rawPrincipalRepaid,
+        uint256 rawInterestRepaid,
+        uint256 newOutstandingAssets,
+        string calldata newAssetReportId
+    ) public {
+        uint256 principalRepaid = rawPrincipalRepaid % token.balanceOf(address(manager));
+        uint256 interestRepaid = rawInterestRepaid % token.balanceOf(address(manager));
+        manager.repay(structuredAssetVault, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
+    }
+
+    function start() public {
+        manager.start(structuredAssetVault);
+    }
+
+    function close() public {
+        manager.close(structuredAssetVault);
+    }
+
+    function _getNumberOfTranches() internal view returns (uint256) {
+        return structuredAssetVault.getTranches().length;
+    }
 }
