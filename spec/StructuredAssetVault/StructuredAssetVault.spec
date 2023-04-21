@@ -9,6 +9,7 @@ methods {
     paused() returns bool envfree
     status() returns sav.Status envfree
     tranches(uint256) returns address envfree
+    virtualTokenBalance() returns uint256 envfree
 
     BORROWER_ROLE() returns bytes32 envfree
     DEFAULT_ADMIN_ROLE() returns bytes32 envfree
