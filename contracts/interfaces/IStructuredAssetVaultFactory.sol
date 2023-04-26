@@ -89,10 +89,9 @@ interface IStructuredAssetVaultFactory is IAccessControlEnumerable {
     function isBorrowerAllowed(address manager, address borrower) external view returns (bool);
 
     /**
-     * @notice
-     * - adds or removes provided address from given manager's allowed borrowers list
-     * - can be executed only by protocol admin
-     * - reverts if given manager address does not have WHITELISTED_MANAGER_ROLE granted
+     * @notice - adds or removes provided address from given manager's allowed borrowers list
+     *         - can be executed only by protocol admin
+     *         - reverts if given manager address does not have WHITELISTED_MANAGER_ROLE granted
      * @param manager Address of supposed Asset Vault manager
      * @param borrower Address of supposed Asset Vault borrower
      * @param shouldAllow Value indicating whether given borrower should be added or removed from given manager's allowed borrowers list

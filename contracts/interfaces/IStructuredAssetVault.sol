@@ -75,7 +75,7 @@ struct ExpectedEquityRate {
 /**
  * @title Structured AssetVault used for obtaining funds and managing disbursements
  * @notice AssetVault consists of multiple tranches, each offering a different yield for the lender
- * based on the respective risk.
+ *         based on the respective risk.
  */
 
 interface IStructuredAssetVault is IAccessControlUpgradeable {
@@ -178,34 +178,32 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
 
     /**
      * @notice Launches the AssetVault making it possible to make disbursements.
-     * @dev
-     * - reverts if tranches ratios and AssetVault min size are not met,
-     * - changes status to `Live`,
-     * - sets `startDate` and `endDate`,
-     * - transfers assets obtained in tranches to the AssetVault.
+     * @dev - reverts if tranches ratios and AssetVault min size are not met,
+     *      - changes status to `Live`,
+     *      - sets `startDate` and `endDate`,
+     *      - transfers assets obtained in tranches to the AssetVault.
      */
     function start() external;
 
     /**
      * @notice Closes the AssetVault, making it possible to withdraw funds from tranche vaults.
-     * @dev
-     * - reverts if there are any active outstanding assets before the end date,
-     * - changes status to `Closed`,
-     * - calculates waterfall values for tranches and transfers the funds to the vaults,
-     * - updates `endDate`.
+     * @dev - reverts if there are any active outstanding assets before the end date,
+     *      - changes status to `Closed`,
+     *      - calculates waterfall values for tranches and transfers the funds to the vaults,
+     *      - updates `endDate`.
      */
     function close() external;
 
     /**
      * @notice Distributes AssetVault value among tranches respecting their target apys and fees.
-     * Returns deposits for CapitalFormation and Closed AssetVault status.
+     *         Returns deposits for CapitalFormation and Closed AssetVault status.
      * @return Array of current tranche values
      */
     function calculateWaterfall() external view returns (uint256[] memory);
 
     /**
      * @notice Distributes AssetVault value among tranches respecting their target apys, but not fees.
-     * Returns deposits for CapitalFormation and Closed AssetVault status.
+     *         Returns deposits for CapitalFormation and Closed AssetVault status.
      * @return Array of current tranche values (with pending fees not deducted)
      */
     function calculateWaterfallWithoutFees() external view returns (uint256[] memory);
@@ -311,7 +309,7 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
     /**
      * @notice Reverts if tranche ratios are not met
      * @param newTotalAssets new total assets value of the tranche calling this function.
-     * Is ignored if not called by tranche
+     * @dev Is ignored if not called by tranche
      */
     function checkTranchesRatiosFromTranche(uint256 newTotalAssets) external view;
 

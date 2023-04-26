@@ -15,8 +15,8 @@ import "../StructuredAssetVault.sol";
 
 /**
  * @dev This contract is used to test the StructuredAssetVault contract.
- * The intention is to easily set non-settable values and have access to private methods.
- * Please don't override any StructuredAssetVault methods in this contract.
+ *      The intention is to easily set non-settable values and have access to private methods.
+ *      Please don't override any StructuredAssetVault methods in this contract.
  */
 contract StructuredAssetVaultTest2 is StructuredAssetVault {
     constructor(

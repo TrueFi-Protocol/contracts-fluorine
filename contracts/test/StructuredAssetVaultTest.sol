@@ -16,8 +16,8 @@ import {TestContract} from "./TestContract.sol";
 
 /**
  * @dev This contract is used to test the StructuredAssetVault contract.
- * The intention is to easily set non-settable values and have access to private methods.
- * Please don't override any StructuredAssetVault methods in this contract.
+ *      The intention is to easily set non-settable values and have access to private methods.
+ *      Please don't override any StructuredAssetVault methods in this contract.
  */
 contract StructuredAssetVaultTest is StructuredAssetVault, TestContract {
     function setTrancheMinSubordinateRatio(uint256 trancheIdx, uint128 ratio) external {
