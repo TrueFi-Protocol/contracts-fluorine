@@ -78,6 +78,7 @@ contract StructuredAssetVaultFuzzingInit {
         _initializeAssetVault();
 
         _initializeLender();
+        _initializeBorrower();
 
         _fillTranches();
         _startAssetVault();
@@ -198,6 +199,11 @@ contract StructuredAssetVaultFuzzingInit {
     function _initializeLender() internal {
         lender = new FuzzingLender();
         token.mint(address(lender), 1e10 * 10**token.decimals());
+    }
+
+    function _initializeBorrower() internal {
+        borrower = new FuzzingBorrower();
+        token.mint(address(borrower), 1e10 * 10**token.decimals());
     }
 
     function _fillTranches() internal {
