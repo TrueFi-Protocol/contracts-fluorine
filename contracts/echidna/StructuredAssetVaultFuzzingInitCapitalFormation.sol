@@ -37,7 +37,7 @@ import {FuzzingManager} from "./FuzzingManager.sol";
 
 uint256 constant DAY = 1 days;
 
-contract StructuredAssetVaultFuzzingInit {
+contract StructuredAssetVaultFuzzingInitCapitalFormation {
     MockToken public token;
     FuzzingLender public lender;
     FuzzingBorrower public borrower;
@@ -81,8 +81,6 @@ contract StructuredAssetVaultFuzzingInit {
         _initializeBorrower();
 
         _fillTranches();
-        _startAssetVault();
-        _disburseInitialTokens();
     }
 
     function _initializeToken() internal {
@@ -212,11 +210,7 @@ contract StructuredAssetVaultFuzzingInit {
         lender.deposit(ITrancheVault(address(seniorTranche)), 5e6 * 10**token.decimals());
     }
 
-    function _startAssetVault() internal {
-        manager.start(structuredAssetVault);
-    }
-
-    function _disburseInitialTokens() internal {
-        // TODO
+    function _getNumberOfTranches() internal view returns (uint256) {
+        return structuredAssetVault.getTranches().length;
     }
 }

@@ -11,12 +11,10 @@
 
 pragma solidity ^0.8.18;
 
-import {StructuredAssetVaultFuzzingInteractions} from "./StructuredAssetVaultFuzzingInteractions.sol";
+import {StructuredAssetVaultFuzzingInitCapitalFormation} from "./StructuredAssetVaultFuzzingInitCapitalFormation.sol";
 import {ITrancheVault} from "../interfaces/ITrancheVault.sol";
 
-uint256 constant DAY = 1 days;
-
-contract StructuredAssetVaultFuzzingInteractionsWithLiveActions is StructuredAssetVaultFuzzingInteractions {
+contract TrancheVaultFuzzingInteractions is StructuredAssetVaultFuzzingInitCapitalFormation {
     function deposit(uint256 rawAmount, uint8 rawTrancheId) public {
         uint256 trancheId = rawTrancheId % _getNumberOfTranches();
         uint256 amount = rawAmount % token.balanceOf(address(lender));

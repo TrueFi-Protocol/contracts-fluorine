@@ -11,12 +11,21 @@
 
 pragma solidity ^0.8.18;
 
-import {CryticERC4626PropertyTests} from "@crytic/properties/contracts/ERC4626/ERC4626PropertyTests.sol";
-import {TestERC20Token} from "@crytic/properties/contracts/ERC4626/util/TestERC20Token.sol";
-import {StructuredAssetVaultFuzzingInteractions} from "./StructuredAssetVaultFuzzingInteractions.sol";
+import {StructuredAssetVaultFuzzingInitCapitalFormation} from "./StructuredAssetVaultFuzzingInitCapitalFormation.sol";
 
-contract StructuredAssetVaultFuzzingInvariantsCrytic is CryticERC4626PropertyTests, StructuredAssetVaultFuzzingInteractions {
-    constructor() StructuredAssetVaultFuzzingInteractions() {
-        initialize(address(equityTranche), address(token), false);
+uint256 constant DAY = 1 days;
+
+contract StructuredAssetVaultFuzzingInitLive is StructuredAssetVaultFuzzingInitCapitalFormation {
+    constructor() {
+        _startAssetVault();
+        _disburseInitialTokens();
+    }
+
+    function _startAssetVault() internal {
+        manager.start(structuredAssetVault);
+    }
+
+    function _disburseInitialTokens() internal {
+        // TODO
     }
 }

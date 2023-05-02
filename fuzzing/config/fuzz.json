@@ -1,3 +1,4 @@
 {
-  "StructuredAssetVaultFuzzingInvariantsCrytic": "fuzzing/config/StructuredAssetVaultCrytic.yaml"
+  "StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions": "fuzzing/config/StructuredAssetVaultLiveWithLiveActions.yaml",
+  "StructuredAssetVaultFuzzingInvariantsLiveCrytic": "fuzzing/config/StructuredAssetVaultLiveCrytic.yaml"
 }

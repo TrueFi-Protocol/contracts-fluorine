@@ -11,12 +11,12 @@
 
 pragma solidity ^0.8.18;
 
-import {StructuredAssetVaultFuzzingInit} from "./StructuredAssetVaultFuzzingInit.sol";
+import {StructuredAssetVaultFuzzingInitLive} from "./StructuredAssetVaultFuzzingInitLive.sol";
 import {Status} from "../interfaces/IStructuredAssetVault.sol";
 
 uint256 constant DAY = 1 days;
 
-contract StructuredAssetVaultFuzzingInteractions is StructuredAssetVaultFuzzingInit {
+contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzzingInitLive {
     uint256 internal previousTotalAssets;
     Status internal previousStatus;
 
@@ -63,9 +63,5 @@ contract StructuredAssetVaultFuzzingInteractions is StructuredAssetVaultFuzzingI
 
     function close() public {
         manager.close(structuredAssetVault);
-    }
-
-    function _getNumberOfTranches() internal view returns (uint256) {
-        return structuredAssetVault.getTranches().length;
     }
 }

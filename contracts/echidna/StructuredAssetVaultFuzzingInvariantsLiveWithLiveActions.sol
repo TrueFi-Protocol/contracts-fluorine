@@ -11,7 +11,7 @@
 
 pragma solidity ^0.8.18;
 
-import {StructuredAssetVaultFuzzingInteractionsWithLiveActions} from "./StructuredAssetVaultFuzzingInteractionsWithLiveActions.sol";
+import {StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions} from "./StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions.sol";
 import {Status, TrancheData} from "../interfaces/IStructuredAssetVault.sol";
 import {StructuredAssetVault} from "../StructuredAssetVault.sol";
 import {ITrancheVault, Checkpoint} from "../interfaces/ITrancheVault.sol";
@@ -19,7 +19,7 @@ import {TrancheVault} from "../carbon/TrancheVault.sol";
 
 uint256 constant DAY = 1 days;
 
-contract StructuredAssetVaultFuzzingInvariantsWithLiveActions is StructuredAssetVaultFuzzingInteractionsWithLiveActions {
+contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions {
     function verify_statusIsNotCapitalFormation() public view {
         assert(structuredAssetVault.status() != Status.CapitalFormation);
     }
