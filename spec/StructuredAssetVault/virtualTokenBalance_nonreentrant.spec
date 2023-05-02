@@ -30,12 +30,14 @@ rule onlyIncreaseAndRepayDirectlyIncreaseVirtualTokenBalance(method f) filtered 
 
     require virtualTokenBalance_new > virtualTokenBalance_old;
 
-    assert
+    assert // start().selector relies on a tranche call to increaseVTB()
         f.selector == increaseVirtualTokenBalance(uint256).selector ||
         f.selector == repay(uint256,uint256,uint256,string).selector;
 }
 
-rule closeDecreasesVirtualTokenBalance() {
+rule closeWhenLiveDecreasesVirtualTokenBalance() {
+    require status() == sav.Status.Live;
+
     uint256 virtualTokenBalance_old = virtualTokenBalance();
 
     env e;
@@ -43,7 +45,22 @@ rule closeDecreasesVirtualTokenBalance() {
 
     uint256 virtualTokenBalance_new = virtualTokenBalance();
 
+    // TODO determine whether it's possible to make this a strict inequality,
+    // by hinting with the _calculateWaterfall() function
     assert virtualTokenBalance_new <= virtualTokenBalance_old;
+}
+
+rule closeWhenNotLiveDoesntChangeVirtualTokenBalance() {
+    require status() != sav.Status.Live;
+
+    uint256 virtualTokenBalance_old = virtualTokenBalance();
+
+    env e;
+    close(e);
+
+    uint256 virtualTokenBalance_new = virtualTokenBalance();
+
+    assert virtualTokenBalance_new == virtualTokenBalance_old;
 }
 
 rule decreaseDecreasesVirtualTokenBalance(uint256 amount) {
