@@ -42,7 +42,7 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
         uint256 newOutstandingAssets,
         string calldata newAssetReportId
     ) public {
-        uint256 amount = rawAmount % structuredAssetVault.virtualTokenBalance();
+        uint256 amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
         manager.disburse(structuredAssetVault, address(borrower), amount, newOutstandingAssets, newAssetReportId);
     }
 
@@ -52,8 +52,8 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
         uint256 newOutstandingAssets,
         string calldata newAssetReportId
     ) public {
-        uint256 principalRepaid = rawPrincipalRepaid % token.balanceOf(address(manager));
-        uint256 interestRepaid = rawInterestRepaid % token.balanceOf(address(manager));
+        uint256 principalRepaid = (rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal()) + 1;
+        uint256 interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
         manager.repay(structuredAssetVault, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
     }
 

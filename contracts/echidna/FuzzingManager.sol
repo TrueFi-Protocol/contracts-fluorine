@@ -14,6 +14,7 @@ pragma solidity ^0.8.18;
 import {IStructuredAssetVault, Status} from "../StructuredAssetVault.sol";
 import {IDepositController} from "../interfaces/IDepositController.sol";
 import {IWithdrawController} from "../interfaces/IWithdrawController.sol";
+import {MockToken} from "contracts-carbon/contracts/mocks/MockToken.sol";
 
 contract FuzzingManager {
     function setDepositAllowed(
@@ -32,6 +33,14 @@ contract FuzzingManager {
         withdrawController.setWithdrawAllowed(newWithdrawAllowed, portfolioStatus);
     }
 
+    function approve(
+        MockToken token,
+        address spender,
+        uint256 amount
+    ) public {
+        token.increaseAllowance(spender, amount);
+    }
+
     function repay(
         IStructuredAssetVault structuredAssetVault,
         uint256 principalRepaid,
@@ -48,7 +57,7 @@ contract FuzzingManager {
         uint256 amount,
         uint256 newOutstandingAssets,
         string calldata newAssetReportId
-    ) external {
+    ) public {
         structuredAssetVault.disburse(recipient, amount, newOutstandingAssets, newAssetReportId);
     }
 

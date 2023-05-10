@@ -81,6 +81,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
         _initializeBorrower();
 
         _fillTranches();
+        _repayerApproveVault();
     }
 
     function _initializeToken() internal {
@@ -208,6 +209,10 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
         lender.deposit(ITrancheVault(address(equityTranche)), 2e6 * 10**token.decimals());
         lender.deposit(ITrancheVault(address(juniorTranche)), 3e6 * 10**token.decimals());
         lender.deposit(ITrancheVault(address(seniorTranche)), 5e6 * 10**token.decimals());
+    }
+
+    function _repayerApproveVault() internal {
+        manager.approve(token, address(structuredAssetVault), 1e15 * 10**token.decimals());
     }
 
     function _getNumberOfTranches() internal view returns (uint256) {
