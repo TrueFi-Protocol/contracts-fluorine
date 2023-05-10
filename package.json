@@ -4,6 +4,7 @@
   "description": "TrueFi Fluorine",
   "scripts": {
     "clean": "rm -rf ./build && hardhat clean",
+    "clean:fuzz": "./fuzzing/revert_copy_carbon.sh",
     "build:fuzz": "pnpm clean && ./fuzzing/copy_carbon.sh && pnpm build:hardhat && pnpm build:typechain && pnpm build:mars && pnpm run build:merge-deployments",
     "build:hardhat": "hardhat compile",
     "build:typechain": "typechain --target ethers-v5 --out-dir build/types 'build/*.json'",
