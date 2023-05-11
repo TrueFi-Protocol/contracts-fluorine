@@ -37,4 +37,26 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
             assert(subordinateValue * BASIS_PRECISION >= trancheValue * minSubordinateRatio);
         }
     }
+
+    function verify_assetVaultCanAlwaysBeClosedIfNotStartedBeforeStartDeadline() public {
+        require(structuredAssetVault.status() == Status.CapitalFormation);
+
+        uint256 startDeadline = structuredAssetVault.startDeadline();
+
+        if (block.timestamp < startDeadline) {
+            try structuredAssetVault.close() {
+                assert(false);
+            } catch {
+                // correct
+            }
+        } else {
+            try structuredAssetVault.close() {
+                // correct
+            } catch {
+                assert(false);
+            }
+        }
+
+        revert();
+    }
 }
