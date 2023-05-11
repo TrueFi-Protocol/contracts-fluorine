@@ -173,12 +173,12 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
         tranchesInitData[1] = TrancheInitData(
             ITrancheVault(address(juniorTranche)),
             uint128((BASIS_PRECISION * 5) / 100), /* targetApy */
-            0 /* minSubordinateRatio */
+            uint128(BASIS_PRECISION / 2) /* minSubordinateRatio */
         );
         tranchesInitData[2] = TrancheInitData(
             ITrancheVault(address(seniorTranche)),
             uint128((BASIS_PRECISION * 3) / 100), /* targetApy */
-            0 /* minSubordinateRatio */
+            uint128((BASIS_PRECISION * 2) / 3) /* minSubordinateRatio */
         );
 
         address[] memory allowedBorrowers = new address[](1);
