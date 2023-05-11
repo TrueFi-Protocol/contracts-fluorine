@@ -10,6 +10,9 @@ methods {
     status() returns sav.Status envfree
     tranches(uint256) returns address envfree
     virtualTokenBalance() returns uint256 envfree
+    outstandingAssets() returns uint256 envfree
+    startDeadline() returns uint256 envfree
+    endDate() returns uint256 envfree
 
     BORROWER_ROLE() returns bytes32 envfree
     DEFAULT_ADMIN_ROLE() returns bytes32 envfree
