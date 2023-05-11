@@ -11,22 +11,29 @@
 
 pragma solidity ^0.8.18;
 
-import {StructuredAssetVaultFuzzingInitLive} from "./StructuredAssetVaultFuzzingInitLive.sol";
+import {StructuredAssetVaultFuzzingInitClosed} from "./StructuredAssetVaultFuzzingInitClosed.sol";
+import {TrancheVaultFuzzingInteractions} from "./TrancheVaultFuzzingInteractions.sol";
 import {Status} from "../interfaces/IStructuredAssetVault.sol";
 
 uint256 constant DAY = 1 days;
 
-contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzzingInitLive {
+contract StructuredAssetVaultFuzzingInteractionsClosed is StructuredAssetVaultFuzzingInitClosed, TrancheVaultFuzzingInteractions {
     uint256 internal previousTotalAssets;
+    uint256 internal previousTokenBalance;
     Status internal previousStatus;
 
     constructor() {
         previousStatus = structuredAssetVault.status();
+        previousTokenBalance = token.balanceOf(address(structuredAssetVault));
         previousTotalAssets = structuredAssetVault.totalAssets();
     }
 
     function updateTotalAssets() public {
         previousTotalAssets = structuredAssetVault.totalAssets();
+    }
+
+    function updatePreviousTokenBalance() public {
+        previousTokenBalance = token.balanceOf(address(structuredAssetVault));
     }
 
     function updatePreviousStatus() public {
@@ -35,15 +42,6 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
 
     function updateCheckpoints() public {
         structuredAssetVault.updateCheckpoints();
-    }
-
-    function disburse(
-        uint256 rawAmount,
-        uint256 newOutstandingAssets,
-        string calldata newAssetReportId
-    ) public {
-        uint256 amount = rawAmount % structuredAssetVault.virtualTokenBalance();
-        manager.disburse(structuredAssetVault, address(borrower), amount, newOutstandingAssets, newAssetReportId);
     }
 
     function repay(
@@ -55,13 +53,5 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
         uint256 principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
         uint256 interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
         manager.repay(structuredAssetVault, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
-    }
-
-    function start() public {
-        manager.start(structuredAssetVault);
-    }
-
-    function close() public {
-        manager.close(structuredAssetVault);
     }
 }
