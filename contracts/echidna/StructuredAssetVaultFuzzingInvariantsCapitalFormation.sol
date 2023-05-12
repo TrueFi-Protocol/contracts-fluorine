@@ -23,7 +23,7 @@ uint256 constant DAY = 1 days;
 contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAssetVaultFuzzingInteractionsCapitalFormation {
     function verify_minSubordinateRatioIsSatisfiedOnStart() external {
         require(structuredAssetVault.status() == Status.CapitalFormation);
-        structuredAssetVault.start();
+        manager.start(structuredAssetVault);
 
         uint256 subordinateValue = equityTranche.totalAssets();
 
@@ -35,6 +35,26 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
             (, uint128 minSubordinateRatio, , , ) = structuredAssetVault.tranchesData(i);
 
             assert(subordinateValue * BASIS_PRECISION >= trancheValue * minSubordinateRatio);
+            subordinateValue += trancheValue;
+        }
+    }
+
+    function verify_totalAssetsContinuousOnStart() external {
+        uint256[] memory totalAssetsBefore = _tranchesTotalAssets();
+
+        manager.start(structuredAssetVault);
+
+        uint256[] memory totalAssetsAfter = _tranchesTotalAssets();
+
+        for (uint256 i; i < totalAssetsBefore.length; i++) {
+            assert(totalAssetsBefore[i] == totalAssetsAfter[i]);
+        }
+    }
+
+    function _tranchesTotalAssets() internal view returns (uint256[] memory totalAssets) {
+        totalAssets = new uint256[](3);
+        for (uint256 i = 0; i < _getNumberOfTranches(); i++) {
+            totalAssets[i] = structuredAssetVault.tranches(i).totalAssets();
         }
     }
 
