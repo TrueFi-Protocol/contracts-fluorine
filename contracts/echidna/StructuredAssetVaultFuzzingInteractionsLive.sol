@@ -71,23 +71,54 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
     function repay(
         uint256 rawPrincipalRepaid,
         uint256 rawInterestRepaid,
-        uint256 newOutstandingAssets,
-        string calldata newAssetReportId
+        uint256 rawNewOutstandingAssets,
+        string calldata newAssetReportId,
+        bool optimistic
     ) public {
-        uint256 principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
-        uint256 interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
+        uint256 principalRepaid;
+        uint256 interestRepaid;
+        uint256 newOutstandingAssets;
+        if (!optimistic) {
+            principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
+            interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
+            newOutstandingAssets = rawNewOutstandingAssets;
+        } else {
+            principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
+            interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
+            uint256 oldOutstandingAssets = structuredAssetVault.outstandingAssets();
+            uint256 equityValue = equityTranche.totalAssets();
+            (uint256 lowerBound, uint256 upperBound) = _expectedEquityBounds();
+            uint256 totalDeficit = _totalDeficit();
+            uint256 newOutstandingAssetsLowerBound;
+            if (lowerBound + oldOutstandingAssets + totalDeficit > principalRepaid + interestRepaid + equityValue) {
+                newOutstandingAssetsLowerBound =
+                    lowerBound +
+                    oldOutstandingAssets -
+                    principalRepaid -
+                    interestRepaid -
+                    equityValue +
+                    totalDeficit;
+            } else {
+                newOutstandingAssetsLowerBound = 0;
+            }
+            uint256 newOutstandingAssetsUpperBound = upperBound +
+                oldOutstandingAssets -
+                principalRepaid -
+                interestRepaid -
+                equityValue +
+                totalDeficit;
+            newOutstandingAssets =
+                (rawNewOutstandingAssets % (newOutstandingAssetsUpperBound - newOutstandingAssetsLowerBound)) +
+                newOutstandingAssetsLowerBound;
+        }
         manager.repay(structuredAssetVault, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
-    }
-
-    function start() public {
-        manager.start(structuredAssetVault);
     }
 
     function close() public {
         manager.close(structuredAssetVault);
     }
 
-    function _totalDeficit() internal returns (uint256) {
+    function _totalDeficit() internal view returns (uint256) {
         uint256 totalDeficit = 0;
         for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
             (, , , , DeficitCheckpoint memory checkpoint) = structuredAssetVault.tranchesData(i);
