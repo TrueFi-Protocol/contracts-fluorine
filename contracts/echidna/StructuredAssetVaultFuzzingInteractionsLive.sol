@@ -12,6 +12,7 @@
 pragma solidity ^0.8.18;
 
 import {StructuredAssetVaultFuzzingInitLive} from "./StructuredAssetVaultFuzzingInitLive.sol";
+import {DeficitCheckpoint} from "../interfaces/IStructuredAssetVault.sol";
 import {Status} from "../interfaces/IStructuredAssetVault.sol";
 
 uint256 constant DAY = 1 days;
@@ -39,11 +40,32 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
 
     function disburse(
         uint256 rawAmount,
-        uint256 newOutstandingAssets,
-        string calldata newAssetReportId
+        uint256 rawNewOutstandingAssets,
+        string calldata newAssetReportId,
+        bool optimistic
     ) public {
-        uint256 amount = rawAmount % structuredAssetVault.virtualTokenBalance();
+        structuredAssetVault.updateCheckpoints();
+        uint256 amount;
+        uint256 newOutstandingAssets;
+        if (!optimistic) {
+            amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
+            newOutstandingAssets = rawNewOutstandingAssets;
+        } else {
+            amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
+            uint256 oldOutstandingAssets = structuredAssetVault.outstandingAssets();
+            uint256 equityValue = equityTranche.totalAssets();
+            (uint256 lowerBound, uint256 upperBound) = _expectedEquityBounds();
+            uint256 totalDeficit = _totalDeficit();
+            uint256 newOutstandingAssetsLowerBound = lowerBound + oldOutstandingAssets + amount - equityValue + totalDeficit;
+            uint256 newOutstandingAssetsUpperBound = upperBound + oldOutstandingAssets + amount - equityValue + totalDeficit;
+            newOutstandingAssets =
+                (rawNewOutstandingAssets % (newOutstandingAssetsUpperBound - newOutstandingAssetsLowerBound)) +
+                newOutstandingAssetsLowerBound;
+        }
         manager.disburse(structuredAssetVault, address(borrower), amount, newOutstandingAssets, newAssetReportId);
+        if (optimistic) {
+            assert(_expectedEquityRateMatched());
+        }
     }
 
     function repay(
@@ -63,5 +85,15 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
 
     function close() public {
         manager.close(structuredAssetVault);
+    }
+
+    function _totalDeficit() internal returns (uint256) {
+        uint256 totalDeficit = 0;
+        for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
+            (, , , , DeficitCheckpoint memory checkpoint) = structuredAssetVault.tranchesData(i);
+            totalDeficit += checkpoint.deficit;
+        }
+
+        return totalDeficit;
     }
 }

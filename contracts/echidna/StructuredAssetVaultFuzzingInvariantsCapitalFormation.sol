@@ -25,18 +25,7 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
         require(structuredAssetVault.status() == Status.CapitalFormation);
         manager.start(structuredAssetVault);
 
-        uint256 subordinateValue = equityTranche.totalAssets();
-
-        for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
-            ITrancheVault tranche = structuredAssetVault.tranches(i);
-
-            uint256 trancheValue = tranche.totalAssets();
-
-            (, uint128 minSubordinateRatio, , , ) = structuredAssetVault.tranchesData(i);
-
-            assert(subordinateValue * BASIS_PRECISION >= trancheValue * minSubordinateRatio);
-            subordinateValue += trancheValue;
-        }
+        assert(_minSubordinateRatioSatisfied());
     }
 
     function verify_totalAssetsContinuousOnStart() external {

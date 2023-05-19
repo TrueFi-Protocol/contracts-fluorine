@@ -50,6 +50,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
     ITrancheVault public seniorTranche;
     StructuredAssetVaultTest2 public structuredAssetVault;
 
+    ExpectedEquityRate public expectedEquityRate;
     uint256 internal constant FEE_RATE = (BASIS_PRECISION * 5) / 1000;
 
     constructor() {
@@ -184,6 +185,8 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
         address[] memory allowedBorrowers = new address[](1);
         allowedBorrowers[0] = address(borrower);
 
+        expectedEquityRate = ExpectedEquityRate((BASIS_PRECISION * 7) / 100, (BASIS_PRECISION * 20) / 100);
+
         structuredAssetVault = new StructuredAssetVaultTest2(
             address(manager), /* manager */
             allowedBorrowers,
@@ -191,7 +194,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
             IProtocolConfig(address(protocolConfig)),
             assetVaultParams,
             tranchesInitData,
-            ExpectedEquityRate((BASIS_PRECISION * 2) / 100, (BASIS_PRECISION * 20) / 100)
+            expectedEquityRate
         );
     }
 
@@ -217,5 +220,24 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
 
     function _getNumberOfTranches() internal view returns (uint256) {
         return structuredAssetVault.getTranches().length;
+    }
+
+    function _minSubordinateRatioSatisfied() internal view returns (bool) {
+        uint256 subordinateValue = equityTranche.totalAssets();
+
+        for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
+            ITrancheVault tranche = structuredAssetVault.tranches(i);
+
+            uint256 trancheValue = tranche.totalAssets();
+
+            (, uint128 minSubordinateRatio, , , ) = structuredAssetVault.tranchesData(i);
+
+            if (subordinateValue * BASIS_PRECISION < trancheValue * minSubordinateRatio) {
+                return false;
+            }
+            subordinateValue += trancheValue;
+        }
+
+        return true;
     }
 }
