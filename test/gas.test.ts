@@ -71,7 +71,7 @@ describe('Gas cost', () => {
 
         await disburse(principal, { interest })
         await updateState(0)
-        testedTx = await repay(principal, interest, { outstandingAssets: 0 })
+        testedTx = await repay(principal, interest, { outstandingAssets: principal.add(interest) })
       })
 
       it('repay in Closed (first)', async () => {
@@ -112,7 +112,7 @@ describe('Gas cost', () => {
         await updateState(0)
         await assetVault.close()
 
-        testedTx = await repay(principal, interest, { outstandingAssets: 0 })
+        testedTx = await repay(principal, interest, { outstandingAssets: principal.add(interest) })
       })
 
       it('update state (first)', async () => {

@@ -28,7 +28,12 @@ contract MultiAction is TestContract {
         DepositArgs calldata depositArgs,
         uint256 trancheIdx
     ) external {
-        assetVault.disburse(disburseArgs.recipient, disburseArgs.amount, disburseArgs.outstandingAssets, disburseArgs.assetReportId);
+        assetVault.disburseThenUpdateState(
+            disburseArgs.recipient,
+            disburseArgs.amount,
+            disburseArgs.outstandingAssets,
+            disburseArgs.assetReportId
+        );
         assetVault.asset().approve(address(assetVault.tranches(trancheIdx)), type(uint256).max);
         assetVault.tranches(trancheIdx).deposit(depositArgs.amount, depositArgs.receiver);
     }

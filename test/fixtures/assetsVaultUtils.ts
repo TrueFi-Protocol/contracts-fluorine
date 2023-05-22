@@ -29,20 +29,29 @@ export function assetVaultUtils(wallet: Wallet, assetVault: StructuredAssetVault
     amount: BigNumberish,
     { interest = 0, sender = wallet, recipient = wallet, newAssetReportId = assetReportId }: DisburseOptions = {}
   ) {
+    if (interest === 0) {
+      return assetVault.connect(sender).disburse(recipient.address, amount, newAssetReportId)
+    }
+
     const newOutstandingAssets = (await assetVault.outstandingAssets()).add(amount).add(interest)
-    return assetVault.connect(sender).disburse(recipient.address, amount, newOutstandingAssets, newAssetReportId)
+    return assetVault
+      .connect(sender)
+      .disburseThenUpdateState(recipient.address, amount, newOutstandingAssets, newAssetReportId)
   }
 
   async function repay(
     principal: BigNumberish,
     interest: BigNumberish,
-    { outstandingAssets, sender = wallet, newAssetReportId = assetReportId }: RepayOptions = {}
+    { outstandingAssets = null, sender = wallet, newAssetReportId = assetReportId }: RepayOptions = {}
   ) {
     const amount = BigNumber.from(principal).add(interest)
-    outstandingAssets ??= (await assetVault.outstandingAssets()).sub(amount)
-
     await token.connect(sender).approve(assetVault.address, amount)
-    return assetVault.connect(sender).repay(principal, interest, outstandingAssets, newAssetReportId)
+
+    if (outstandingAssets === null) {
+      return assetVault.connect(sender).repay(principal, interest, newAssetReportId)
+    }
+
+    return assetVault.connect(sender).updateStateThenRepay(outstandingAssets, principal, interest, newAssetReportId)
   }
 
   async function loseAssets(amount: BigNumberish) {

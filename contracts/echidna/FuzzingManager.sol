@@ -41,24 +41,24 @@ contract FuzzingManager {
         token.increaseAllowance(spender, amount);
     }
 
-    function repay(
+    function updateStateThenRepay(
         IStructuredAssetVault structuredAssetVault,
+        uint256 newOutstandingAssets,
         uint256 principalRepaid,
         uint256 interestRepaid,
-        uint256 newOutstandingAssets,
         string calldata newAssetReportId
     ) public {
-        structuredAssetVault.repay(principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
+        structuredAssetVault.updateStateThenRepay(newOutstandingAssets, principalRepaid, interestRepaid, newAssetReportId);
     }
 
-    function disburse(
+    function disburseThenUpdateState(
         IStructuredAssetVault structuredAssetVault,
         address recipient,
         uint256 amount,
         uint256 newOutstandingAssets,
         string calldata newAssetReportId
     ) public {
-        structuredAssetVault.disburse(recipient, amount, newOutstandingAssets, newAssetReportId);
+        structuredAssetVault.disburseThenUpdateState(recipient, amount, newOutstandingAssets, newAssetReportId);
     }
 
     function start(IStructuredAssetVault structuredAssetVault) public {

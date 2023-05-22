@@ -292,7 +292,7 @@ describe('StructuredAssetVault.updateCheckpoints', () => {
         await assetVault.updateCheckpoints()
       }
 
-      await repay(principal, interest, { outstandingAssets: 0 })
+      await repay(principal, interest, { outstandingAssets: principal.add(interest) })
 
       const seniorBeforeFee = withInterest(senior.initialDeposit, senior.targetApy, timePassed)
       const seniorProtocolFee = getInterest(seniorBeforeFee, protocolFeeRate, timePassed)
@@ -414,7 +414,7 @@ describe('StructuredAssetVault.updateCheckpoints', () => {
 
       const timePassed = 2 * YEAR
       await timeTravel(timePassed)
-      await repay(principal, interest, { outstandingAssets: 0 })
+      await repay(principal, interest, { outstandingAssets: principal.add(interest) })
 
       const totalAssetVaultValue = await assetVault.totalAssets()
       const expectedSeniorAmount = withInterest(depositAmount, tranchesData[2].targetApy, timePassed)

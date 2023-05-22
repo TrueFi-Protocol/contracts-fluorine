@@ -104,16 +104,9 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * @param actionId Unique id among all action types (updateState, disburse, repay)
      * @param recipient Address to which funds are disbursed
      * @param amount Disbursed amount
-     * @param outstandingAssets New outstanding assets amount declared by SAV manager
      * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
      */
-    event Disburse(
-        uint256 indexed actionId,
-        address indexed recipient,
-        uint256 amount,
-        uint256 outstandingAssets,
-        string indexed assetReportId
-    );
+    event Disburse(uint256 indexed actionId, address indexed recipient, uint256 amount, string indexed assetReportId);
 
     /**
      * @notice Event emitted on repay function call
@@ -121,7 +114,6 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * @param caller Address from which function was called
      * @param principalRepaid Principal part of outstanding assets declared to be repaid
      * @param interestRepaid Interest part of outstanding assets declared to be repaid
-     * @param outstandingAssets New outstanding assets amount declared by SAV manager
      * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
      */
     event Repay(
@@ -129,7 +121,6 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
         address indexed caller,
         uint256 principalRepaid,
         uint256 interestRepaid,
-        uint256 outstandingAssets,
         string indexed assetReportId
     );
 
@@ -341,13 +332,28 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * - when onlyAllowedBorrower is set reverts if recipient does not have BORROWER_ROLE
      * @param recipient Address to which funds are disbursed
      * @param amount Disbursed amount
-     * @param newOutstandingAssets New outstanding assets amount declared by SAV manager
      * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
      */
     function disburse(
         address recipient,
         uint256 amount,
-        uint256 newOutstandingAssets,
+        string memory assetReportId
+    ) external;
+
+    /**
+     * @notice
+     * - can be called only by address with MANAGER_ROLE granted
+     * - reverts in Capital Formation and Closed
+     * - when onlyAllowedBorrower is set reverts if recipient does not have BORROWER_ROLE
+     * @param recipient Address to which funds are disbursed
+     * @param amount Disbursed amount
+     * @param newOutstandingAssetsAfterDisburse New outstanding assets amount declared by SAV manager
+     * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
+     */
+    function disburseThenUpdateState(
+        address recipient,
+        uint256 amount,
+        uint256 newOutstandingAssetsAfterDisburse,
         string memory assetReportId
     ) external;
 
@@ -355,15 +361,29 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * @notice
      * - can be called only by address with REPAYER_ROLE granted
      * - reverts in Capital Formation
+     * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
      * @param principalRepaid Principal part of outstanding assets declared to be repaid
      * @param interestRepaid Interest part of outstanding assets declared to be repaid
-     * @param newOutstandingAssets New outstanding assets amount declared by SAV manager
-     * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
      */
     function repay(
         uint256 principalRepaid,
         uint256 interestRepaid,
-        uint256 newOutstandingAssets,
+        string memory assetReportId
+    ) external;
+
+    /**
+     * @notice
+     * - can be called only by address with REPAYER_ROLE granted
+     * - reverts in Capital Formation
+     * @param newOutstandingAssetsBeforeRepay New outstanding assets amount declared by SAV manager
+     * @param assetReportId IPFS CID under which asset report reflecting current SAV state is stored
+     * @param principalRepaid Principal part of outstanding assets declared to be repaid
+     * @param interestRepaid Interest part of outstanding assets declared to be repaid
+     */
+    function updateStateThenRepay(
+        uint256 newOutstandingAssetsBeforeRepay,
+        uint256 principalRepaid,
+        uint256 interestRepaid,
         string memory assetReportId
     ) external;
 }

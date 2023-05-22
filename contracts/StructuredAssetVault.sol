@@ -441,7 +441,7 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
 
     // -- outstanding assets management --
 
-    function updateState(uint256 newOutstandingAssets, string calldata newAssetReportId) external whenNotPaused {
+    function updateState(uint256 newOutstandingAssets, string calldata newAssetReportId) public whenNotPaused {
         _requireManagerRole();
         require(status != Status.CapitalFormation, "SAV: Not allowed before start");
 
@@ -456,9 +456,8 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
     function disburse(
         address recipient,
         uint256 amount,
-        uint256 newOutstandingAssets,
         string calldata newAssetReportId
-    ) external whenNotPaused {
+    ) public override whenNotPaused {
         _requireManagerRole();
         require(recipient != address(this), "SAV: Recipient cannot be SAV");
         if (onlyAllowedBorrowers) {
@@ -470,31 +469,41 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         require(virtualTokenBalance >= amount, "SAV: Insufficient funds");
         outstandingPrincipal += amount;
         virtualTokenBalance -= amount;
-        outstandingAssets = newOutstandingAssets;
+        outstandingAssets += amount;
         _pushAssetReportId(newAssetReportId);
 
         asset.safeTransfer(recipient, amount);
 
-        emit Disburse(actionId++, recipient, amount, newOutstandingAssets, newAssetReportId);
+        emit Disburse(actionId++, recipient, amount, newAssetReportId);
+    }
+
+    function disburseThenUpdateState(
+        address recipient,
+        uint256 amount,
+        uint256 newOutstandingAssetsAfterDisburse,
+        string calldata newAssetReportId
+    ) external override {
+        disburse(recipient, amount, newAssetReportId);
+        updateState(newOutstandingAssetsAfterDisburse, newAssetReportId);
     }
 
     function repay(
         uint256 principalRepaid,
         uint256 interestRepaid,
-        uint256 newOutstandingAssets,
         string calldata newAssetReportId
-    ) external whenNotPaused {
+    ) public override whenNotPaused {
         address repayer = msg.sender;
         assert(repayer != address(this));
         require(hasRole(REPAYER_ROLE, repayer), "SAV: Only repayer");
         require(status != Status.CapitalFormation, "SAV: Can repay only after start");
         require(principalRepaid <= outstandingPrincipal, "SAV: Principal overpayment");
+        uint256 totalRepaid = principalRepaid + interestRepaid;
+        require(totalRepaid <= outstandingAssets, "SAV: Outstanding assets overpayment");
 
         updateCheckpoints();
-        uint256 totalRepaid = principalRepaid + interestRepaid;
         outstandingPrincipal -= principalRepaid;
         paidInterest += interestRepaid;
-        outstandingAssets = newOutstandingAssets;
+        outstandingAssets -= totalRepaid;
         _pushAssetReportId(newAssetReportId);
 
         if (status == Status.Closed) {
@@ -505,7 +514,17 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
             updateCheckpoints();
         }
 
-        emit Repay(actionId++, repayer, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
+        emit Repay(actionId++, repayer, principalRepaid, interestRepaid, newAssetReportId);
+    }
+
+    function updateStateThenRepay(
+        uint256 newOutstandingAssetsBeforeRepay,
+        uint256 principalRepaid,
+        uint256 interestRepaid,
+        string calldata newAssetReportId
+    ) external override {
+        updateState(newOutstandingAssetsBeforeRepay, newAssetReportId);
+        repay(principalRepaid, interestRepaid, newAssetReportId);
     }
 
     function _repayInClosed(uint256 undistributedAssets) internal {

@@ -44,14 +44,14 @@ contract StructuredAssetVaultFuzzingInteractionsClosed is StructuredAssetVaultFu
         structuredAssetVault.updateCheckpoints();
     }
 
-    function repay(
+    function updateStateThenRepay(
+        uint256 newOutstandingAssets,
         uint256 rawPrincipalRepaid,
         uint256 rawInterestRepaid,
-        uint256 newOutstandingAssets,
         string calldata newAssetReportId
     ) public {
         uint256 principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
         uint256 interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
-        manager.repay(structuredAssetVault, principalRepaid, interestRepaid, newOutstandingAssets, newAssetReportId);
+        manager.updateStateThenRepay(structuredAssetVault, newOutstandingAssets, principalRepaid, interestRepaid, newAssetReportId);
     }
 }

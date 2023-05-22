@@ -20,17 +20,17 @@ describe('StructuredAssetVault.disburse', () => {
 
   it('reverts when sent to SAV', async () => {
     const { assetVault, assetReportId } = await loadFixture(assetVaultLiveFixture)
-    await expect(assetVault.disburse(assetVault.address, principal, principal, assetReportId)).to.be.revertedWith(
-      'SAV: Recipient cannot be SAV'
-    )
+    await expect(
+      assetVault.disburseThenUpdateState(assetVault.address, principal, principal, assetReportId)
+    ).to.be.revertedWith('SAV: Recipient cannot be SAV')
   })
 
   it('can send only to allowed borrower when whitelist is enabled', async () => {
     const { other, createAssetVault, assetReportId } = await loadFixture(assetVaultLiveFixture)
     const { assetVault } = await createAssetVault({ onlyAllowedBorrowers: true })
-    await expect(assetVault.disburse(other.address, principal, principal, assetReportId)).to.be.revertedWith(
-      'SAV: Recipient not whitelisted'
-    )
+    await expect(
+      assetVault.disburseThenUpdateState(other.address, principal, principal, assetReportId)
+    ).to.be.revertedWith('SAV: Recipient not whitelisted')
   })
 
   it('can send to everyone when whitelist is disabled', async () => {
@@ -115,9 +115,9 @@ describe('StructuredAssetVault.disburse', () => {
 
   it('does not update asset report id if report is old', async () => {
     const { assetVault, disburse, assetReportId } = await loadFixture(assetVaultLiveFixture)
-    await disburse(principal, { newAssetReportId: assetReportId })
+    await disburse(principal, { interest, newAssetReportId: assetReportId })
     const assetReportHistoryLength = (await assetVault.getAssetReportHistory()).length
-    await disburse(principal, { newAssetReportId: assetReportId })
+    await disburse(principal, { interest, newAssetReportId: assetReportId })
     expect((await assetVault.getAssetReportHistory()).length).to.eq(assetReportHistoryLength)
     expect(await assetVault.latestAssetReportId()).to.eq(assetReportId)
   })
@@ -127,7 +127,7 @@ describe('StructuredAssetVault.disburse', () => {
     const actionId = 0
     await expect(disburse(principal, { interest }))
       .to.emit(assetVault, 'Disburse')
-      .withArgs(actionId, wallet.address, principal, principal + interest, assetReportId)
+      .withArgs(actionId, wallet.address, principal, assetReportId)
   })
 
   it('increases action id', async () => {

@@ -25,7 +25,9 @@ describe('StructuredAssetVault.repay', () => {
 
   it('only repayer', async () => {
     const { repay, other } = await fixture()
-    await expect(repay(principal, interest, { sender: other })).to.be.revertedWith('SAV: Only repayer')
+    await expect(
+      repay(principal, interest, { sender: other, outstandingAssets: principal + interest })
+    ).to.be.revertedWith('SAV: Only manager')
   })
 
   it('is pausable', async () => {
@@ -39,10 +41,10 @@ describe('StructuredAssetVault.repay', () => {
   })
 
   it('forbidden in CapitalFormation', async () => {
-    const { repay } = await loadFixture(assetVaultFixture)
-    await expect(repay(principal, interest, { outstandingAssets: 0 })).to.be.revertedWith(
-      'SAV: Can repay only after start'
-    )
+    const { assetVault, assetReportId } = await loadFixture(assetVaultFixture)
+    await expect(
+      assetVault.updateStateThenRepay(principal + interest, principal, interest, assetReportId)
+    ).to.be.revertedWith('SAV: Not allowed before start')
   })
 
   it('decreases outstanding principal', async () => {
@@ -63,35 +65,35 @@ describe('StructuredAssetVault.repay', () => {
 
   it('updates outstanding assets', async () => {
     const { assetVault, repay } = await fixture()
-    const outstandingAssets = 1234
+    const outstandingAssets = 12345678
     await repay(principal, interest, { outstandingAssets })
-    expect(await assetVault.outstandingAssets()).to.eq(outstandingAssets)
+    expect(await assetVault.outstandingAssets()).to.eq(outstandingAssets - principal - interest)
   })
 
   it('updates asset report id if report is new', async () => {
     const { assetVault, repay } = await fixture()
     const newAssetReportId = 'totallyPossibleAssetReportId'
     const assetReportHistoryLength = (await assetVault.getAssetReportHistory()).length
-    await repay(principal, interest, { newAssetReportId })
+    await repay(principal, interest, { outstandingAssets: principal + interest, newAssetReportId })
     expect((await assetVault.getAssetReportHistory()).length).to.eq(assetReportHistoryLength + 1)
     expect(await assetVault.latestAssetReportId()).to.eq(newAssetReportId)
   })
 
   it('does not update asset report id if report is old', async () => {
     const { assetVault, repay, assetReportId } = await fixture()
+    await assetVault.updateState(0, assetReportId)
     const assetReportHistoryLength = (await assetVault.getAssetReportHistory()).length
-    await repay(principal, interest, { newAssetReportId: assetReportId })
+    await repay(principal, interest, { outstandingAssets: principal + interest, newAssetReportId: assetReportId })
     expect((await assetVault.getAssetReportHistory()).length).to.eq(assetReportHistoryLength)
     expect(await assetVault.latestAssetReportId()).to.eq(assetReportId)
   })
 
   it('emits Repay event', async () => {
     const { assetVault, repay, wallet, assetReportId } = await fixture()
-    const outstandingAssets = 1234
     const actionId = 1
-    await expect(repay(principal, interest, { outstandingAssets }))
+    await expect(repay(principal, interest))
       .to.emit(assetVault, 'Repay')
-      .withArgs(actionId, wallet.address, principal, interest, outstandingAssets, assetReportId)
+      .withArgs(actionId, wallet.address, principal, interest, assetReportId)
   })
 
   it('increases action id', async () => {
@@ -147,7 +149,7 @@ describe('StructuredAssetVault.repay', () => {
 
       await disburse(principal)
       await updateState(0)
-      expect(repay(principal, interest, { outstandingAssets: 0 })).to.changeTokenBalances(
+      expect(repay(principal, interest, { outstandingAssets: amount })).to.changeTokenBalances(
         token,
         [assetVault.address, wallet.address],
         [amount, -amount]
@@ -267,7 +269,7 @@ describe('StructuredAssetVault.repay', () => {
         const seniorTotalAssetsBefore = await seniorTranche.totalAssets()
         const juniorTotalAssetsBefore = await juniorTranche.totalAssets()
 
-        await repay(amountToRepay, 0, { outstandingAssets: 0 })
+        await repay(amountToRepay, 0, { outstandingAssets: amountToRepay })
 
         expect(await seniorTranche.totalAssets()).to.eq(seniorTotalAssetsBefore)
         expect(await juniorTranche.totalAssets()).to.be.closeTo(juniorTotalAssetsBefore.add(amountToRepay), DELTA)
@@ -292,7 +294,7 @@ describe('StructuredAssetVault.repay', () => {
         expect(juniorTotalAssetsBefore.lt(juniorTrancheTargetValue)).to.be.true
 
         const repayAmount = principal.add(interest)
-        await repay(principal, interest, { outstandingAssets: 0 })
+        await repay(principal, interest, { outstandingAssets: repayAmount })
 
         const juniorShare = juniorTrancheTargetValue.sub(juniorTotalAssetsBefore)
         const equityShare = repayAmount.sub(juniorShare)
@@ -324,7 +326,7 @@ describe('StructuredAssetVault.repay', () => {
 
         const seniorTotalAssetsBefore = await seniorTranche.totalAssets()
 
-        await repay(amountToRepay, 0, { outstandingAssets: 0 })
+        await repay(amountToRepay, 0, { outstandingAssets: amountToRepay })
 
         expect(await seniorTranche.totalAssets()).to.eq(seniorTotalAssetsBefore.add(amountToRepay))
         expect(await juniorTranche.totalAssets()).to.eq(0)
@@ -357,7 +359,7 @@ describe('StructuredAssetVault.repay', () => {
         const seniorTrancheTargetValue = (await assetVault.tranchesData(2)).maxValueOnClose
         expect(seniorTotalAssetsBefore.lt(seniorTrancheTargetValue)).to.be.true
 
-        await repay(amountToRepay, 0, { outstandingAssets: 0 })
+        await repay(amountToRepay, 0, { outstandingAssets: amountToRepay })
 
         const seniorShare = seniorTrancheTargetValue.sub(seniorTotalAssetsBefore)
         const juniorShare = amountToRepay.sub(seniorShare)
@@ -379,7 +381,7 @@ describe('StructuredAssetVault.repay', () => {
         expect(await juniorTranche.totalAssets()).to.eq(0)
         expect(await equityTranche.totalAssets()).to.eq(0)
 
-        await repay(totalDeposit, 0, { outstandingAssets: 0 })
+        await repay(totalDeposit, 0, { outstandingAssets: totalDeposit })
 
         const seniorTrancheTargetValue = (await assetVault.tranchesData(2)).maxValueOnClose
         const juniorTrancheTargetValue = (await assetVault.tranchesData(1)).maxValueOnClose
@@ -416,7 +418,7 @@ describe('StructuredAssetVault.repay', () => {
       await timeTravelFrom(assetVaultStartTx, assetVaultDuration)
       await assetVault.close()
 
-      await repay(disburseAmount, interest, { outstandingAssets: 0 })
+      await repay(disburseAmount, interest, { outstandingAssets: disburseAmount.add(interest) })
 
       const expectedSeniorValue = withInterest(senior.initialDeposit, senior.targetApy, assetVaultDuration)
       const expectedJuniorValue = withInterest(junior.initialDeposit, junior.targetApy, assetVaultDuration)
@@ -451,7 +453,7 @@ describe('StructuredAssetVault.repay', () => {
       await timeTravel(YEAR)
       await assetVault.close()
 
-      await repay(principal, interest, { outstandingAssets: 0 })
+      await repay(principal, interest, { outstandingAssets: principal.add(interest) })
 
       const expectedSeniorValueAfterYear = withInterest(senior.initialDeposit, senior.targetApy, YEAR)
       const expectedJuniorValueAfterYear = withInterest(junior.initialDeposit, junior.targetApy, YEAR)
@@ -487,7 +489,7 @@ describe('StructuredAssetVault.repay', () => {
 
       await assetVault.close()
       await loseAssets(disburseAmount)
-      await repay(disburseAmount, interest, { outstandingAssets: 0 })
+      await repay(disburseAmount, interest, { outstandingAssets: disburseAmount.add(interest) })
 
       const expectedSeniorValue = withInterest(senior.initialDeposit, senior.targetApy, assetVaultDuration)
       const expectedJuniorValue = withInterest(junior.initialDeposit, junior.targetApy, assetVaultDuration)
@@ -526,7 +528,7 @@ describe('StructuredAssetVault.repay', () => {
       await assetVault.close()
 
       for (const amount of disburseAmounts) {
-        await repay(amount, interest, { outstandingAssets: 0 })
+        await repay(amount, interest, { outstandingAssets: amount.add(interest) })
       }
 
       const expectedSeniorValue = withInterest(senior.initialDeposit, senior.targetApy, assetVaultDuration)
@@ -582,7 +584,7 @@ describe('StructuredAssetVault.repay', () => {
         delta
       )
 
-      await repay(principal, interest, { outstandingAssets: 0 })
+      await repay(principal, interest, { outstandingAssets: principal.add(interest) })
 
       const expectedEquityValueAfterRepay = expectedEquityValueAfterRedeem.add(principal).add(interest)
 
