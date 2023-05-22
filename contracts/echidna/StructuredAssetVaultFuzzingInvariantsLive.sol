@@ -21,7 +21,7 @@ import {TrancheVault} from "../carbon/TrancheVault.sol";
 uint256 constant DAY = 1 days;
 
 contract StructuredAssetVaultFuzzingInvariantsLive is StructuredAssetVaultFuzzingInteractionsLive {
-    function verify_minSubordinateRatioIsSatisfiedIfExpectedEquityRateIsMatched() external view {
+    function verify_minSubordinateRatioIsSatisfiedIfExpectedEquityRateIsMatched() external {
         require(_expectedEquityRateMatched());
 
         assert(_minSubordinateRatioSatisfied());

@@ -35,9 +35,11 @@ import {FuzzingLender} from "./FuzzingLender.sol";
 import {FuzzingBorrower} from "./FuzzingBorrower.sol";
 import {FuzzingManager} from "./FuzzingManager.sol";
 
+import {PropertiesAsserts} from "@crytic/properties/contracts/util/PropertiesHelper.sol";
+
 uint256 constant DAY = 1 days;
 
-contract StructuredAssetVaultFuzzingInitCapitalFormation {
+contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     MockToken public token;
     FuzzingLender public lender;
     FuzzingBorrower public borrower;
@@ -222,22 +224,28 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation {
         return structuredAssetVault.getTranches().length;
     }
 
-    function _minSubordinateRatioSatisfied() internal view returns (bool) {
+    function _minSubordinateRatioSatisfied() internal returns (bool) {
         uint256 subordinateValue = equityTranche.totalAssets();
+        emit LogUint256("subordinate value", subordinateValue);
 
         for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
             ITrancheVault tranche = structuredAssetVault.tranches(i);
 
             uint256 trancheValue = tranche.totalAssets();
+            emit LogUint256("tranche value", trancheValue);
 
             (, uint128 minSubordinateRatio, , , ) = structuredAssetVault.tranchesData(i);
 
             if (subordinateValue * BASIS_PRECISION < trancheValue * minSubordinateRatio) {
+                emit LogString("min subordinate ratio not satisfied");
+                emit LogUint256("subordinate value * BASIS_PRECISION", subordinateValue * BASIS_PRECISION);
+                emit LogUint256("trancheValue * minSubordinateRatio", trancheValue * minSubordinateRatio);
                 return false;
             }
             subordinateValue += trancheValue;
+            emit LogUint256("subordinate value", subordinateValue);
         }
-
+        emit LogString("min subordinate ratio satisfied");
         return true;
     }
 }

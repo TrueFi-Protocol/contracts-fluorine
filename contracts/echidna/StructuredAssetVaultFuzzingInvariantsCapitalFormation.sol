@@ -24,6 +24,7 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
     function verify_minSubordinateRatioIsSatisfiedOnStart() external {
         require(structuredAssetVault.status() == Status.CapitalFormation);
         manager.start(structuredAssetVault);
+        emit LogString("start vault");
 
         assert(_minSubordinateRatioSatisfied());
     }
@@ -35,8 +36,9 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
 
         uint256[] memory totalAssetsAfter = _tranchesTotalAssets();
 
-        for (uint256 i; i < totalAssetsBefore.length; i++) {
-            assert(totalAssetsBefore[i] == totalAssetsAfter[i]);
+        for (uint256 i = 0; i < totalAssetsBefore.length; i++) {
+            emit LogUint256("tranche id", i);
+            assertEq(totalAssetsBefore[i], totalAssetsAfter[i], "totalAssets are continous on start");
         }
     }
 
@@ -54,7 +56,7 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
 
         if (block.timestamp < startDeadline) {
             try structuredAssetVault.close() {
-                assert(false);
+                assertWithMsg(false, "asset vault cannot be closed if it's before start deadline");
             } catch {
                 // correct
             }
@@ -62,7 +64,7 @@ contract StructuredAssetVaultFuzzingInvariantsCapitalFormation is StructuredAsse
             try structuredAssetVault.close() {
                 // correct
             } catch {
-                assert(false);
+                assertWithMsg(false, "asset vault can be closed after start deadline");
             }
         }
 

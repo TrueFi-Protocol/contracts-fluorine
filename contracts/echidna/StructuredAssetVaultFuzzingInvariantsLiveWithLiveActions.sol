@@ -20,12 +20,16 @@ import {TrancheVault} from "../carbon/TrancheVault.sol";
 uint256 constant DAY = 1 days;
 
 contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions {
-    function verify_statusIsNotCapitalFormation() public view {
-        assert(structuredAssetVault.status() != Status.CapitalFormation);
+    function verify_statusIsNotCapitalFormation() public {
+        assertWithMsg(structuredAssetVault.status() != Status.CapitalFormation, "asset vault is not in capital formation state");
     }
 
-    function verify_virtualTokenBalanceEqualsTokenBalance() public view {
-        assert(structuredAssetVault.virtualTokenBalance() == token.balanceOf(address(structuredAssetVault)));
+    function verify_virtualTokenBalanceEqualsTokenBalance() public {
+        assertEq(
+            structuredAssetVault.virtualTokenBalance(),
+            token.balanceOf(address(structuredAssetVault)),
+            "virtual token balance is equal to actual token balance"
+        );
     }
 
     function verify_updateCheckpointsContinuous() public {
@@ -39,35 +43,57 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
         Checkpoint[] memory trancheCheckpoints_new = _getTrancheCheckpoints();
 
         for (uint256 i = 0; i < waterfall_old.length; i++) {
-            assert(waterfall_new[i] == waterfall_old[i]);
+            emit LogUint256("tranche id", i);
+            assertEq(waterfall_new[i], waterfall_old[i], "waterfall value is equal before and after update");
 
-            assert(
-                trancheData_new[i].deficitCheckpoint.deficit == trancheData_old[i].deficitCheckpoint.deficit &&
-                    trancheData_new[i].deficitCheckpoint.timestamp == trancheData_old[i].deficitCheckpoint.timestamp
+            assertEq(
+                trancheData_new[i].deficitCheckpoint.deficit,
+                trancheData_old[i].deficitCheckpoint.deficit,
+                "deficit value is preserved after subsequent update"
+            );
+            assertEq(
+                trancheData_new[i].deficitCheckpoint.timestamp,
+                trancheData_old[i].deficitCheckpoint.timestamp,
+                "deficit timestamp is preserved after subsequent update"
             );
 
-            assert(
-                trancheCheckpoints_new[i].totalAssets == trancheCheckpoints_old[i].totalAssets &&
-                    trancheCheckpoints_new[i].protocolFeeRate == trancheCheckpoints_old[i].protocolFeeRate &&
-                    trancheCheckpoints_new[i].timestamp == trancheCheckpoints_old[i].timestamp &&
-                    trancheCheckpoints_new[i].unpaidFees == trancheCheckpoints_old[i].unpaidFees
+            assertEq(
+                trancheCheckpoints_new[i].totalAssets,
+                trancheCheckpoints_old[i].totalAssets,
+                "total assets are preserved after subsequent update"
+            );
+            assertEq(
+                trancheCheckpoints_new[i].protocolFeeRate,
+                trancheCheckpoints_old[i].protocolFeeRate,
+                "protocol fee rate is preserved after subsequent update"
+            );
+            assertEq(
+                trancheCheckpoints_new[i].timestamp,
+                trancheCheckpoints_old[i].timestamp,
+                "timestamp is preserved after subsequent update"
+            );
+            assertEq(
+                trancheCheckpoints_new[i].unpaidFees,
+                trancheCheckpoints_old[i].unpaidFees,
+                "unpaid fees are preserved after subsequent update"
             );
         }
     }
 
-    function verify_onlyValidTransitions() public view {
+    function verify_onlyValidTransitions() public {
         Status currentStatus = structuredAssetVault.status();
-        assert(
+        assertWithMsg(
             (previousStatus == Status.Live && currentStatus == Status.Live) ||
                 (previousStatus == Status.Live && currentStatus == Status.Closed) ||
-                (previousStatus == Status.Closed && currentStatus == Status.Closed)
+                (previousStatus == Status.Closed && currentStatus == Status.Closed),
+            "only valid state transitions"
         );
     }
 
-    function verify_onlyValidStatuses() public view {
+    function verify_onlyValidStatuses() public {
         Status status = structuredAssetVault.status();
 
-        assert(status == Status.CapitalFormation || status == Status.Live || status == Status.Closed);
+        assertWithMsg(status == Status.CapitalFormation || status == Status.Live || status == Status.Closed, "only valid statuses");
     }
 
     function verify_tokensAreDistributedCorrectlyOnClose() public {
@@ -79,9 +105,11 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
         }
 
         manager.close(structuredAssetVault);
+        emit LogString("close asset vault");
 
         ITrancheVault[] memory trancheVaults = structuredAssetVault.getTranches();
         for (uint256 i = 2; i > 0; i--) {
+            emit LogUint256("tranche id", i);
             TrancheVault trancheVault = TrancheVault(address(trancheVaults[i]));
             TrancheVault lowerTrancheVault = TrancheVault(address(trancheVaults[i - 1]));
 
@@ -90,10 +118,10 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
                 continue;
             }
 
-            assert(trancheBalance < assumedTrancheValues[i]);
+            assertLt(trancheBalance, assumedTrancheValues[i], "tranche balance is not greater than the assumed tranche value");
 
             uint256 lowerTrancheBalance = lowerTrancheVault.virtualTokenBalance();
-            assert(lowerTrancheBalance == 0);
+            assertEq(lowerTrancheBalance, 0, "lower tranche is empty if tranche doesn't meet assumed value");
         }
 
         revert();
