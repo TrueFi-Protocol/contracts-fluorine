@@ -49,12 +49,15 @@ definition isRoleAdminOnlyFunction(method f) returns bool =
     f.selector == revokeRole(bytes32,address).selector;
 
 definition isManagerOnlyFunction(method f) returns bool =
-    f.selector == disburse(address,uint256,uint256,string).selector ||
+    f.selector == disburse(address,uint256,string).selector ||
+    f.selector == disburseThenUpdateState(address,uint256,uint256,string).selector ||
+    f.selector == updateStateThenRepay(uint256,uint256,uint256,string).selector ||
     f.selector == start().selector ||
     f.selector == updateState(uint256,string).selector;
 
 definition isRepayerOnlyFunction(method f) returns bool =
-    f.selector == repay(uint256,uint256,uint256,string).selector;
+    f.selector == repay(uint256,uint256,string).selector ||
+    f.selector == updateStateThenRepay(uint256,uint256,uint256,string).selector;
 
 definition isRenounceRole(method f) returns bool =
     f.selector == renounceRole(bytes32,address).selector;
@@ -73,7 +76,8 @@ definition isCapitalFormationOnlyFunction(method f) returns bool =
     f.selector == start().selector;
 
 definition isLiveOnlyFunction(method f) returns bool =
-    f.selector == disburse(address,uint256,uint256,string).selector;
+    f.selector == disburse(address,uint256,string).selector ||
+    f.selector == disburseThenUpdateState(address,uint256,uint256,string).selector;
 
 definition isClosedOnlyFunction(method f) returns bool =
     false;
@@ -82,9 +86,10 @@ definition isCapitalFormationOrLiveOnlyFunction(method f) returns bool =
     f.selector == close().selector;
 
 definition isLiveOrClosedOnlyFunction(method f) returns bool =
-    f.selector == repay(uint256,uint256,uint256,string).selector ||
+    f.selector == repay(uint256,uint256,string).selector ||
     f.selector == updateCheckpoints().selector ||
-    f.selector == updateState(uint256,string).selector;
+    f.selector == updateState(uint256,string).selector ||
+    f.selector == updateStateThenRepay(uint256,uint256,uint256,string).selector;
 
 definition isCapitalFormationOrClosedOnlyFunction(method f) returns bool =
     false;
