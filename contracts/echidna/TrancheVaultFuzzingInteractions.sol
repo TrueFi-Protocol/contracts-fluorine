@@ -18,15 +18,16 @@ contract TrancheVaultFuzzingInteractions is StructuredAssetVaultFuzzingInitCapit
     function deposit(uint256 rawAmount, uint8 rawTrancheId) public {
         uint256 trancheId = rawTrancheId % _getNumberOfTranches();
         uint256 amount = rawAmount % token.balanceOf(address(lender));
-        ITrancheVault tranche;
-        if (trancheId == 0) {
-            tranche = equityTranche;
-        } else if (trancheId == 1) {
-            tranche = juniorTranche;
-        } else {
-            tranche = seniorTranche;
-        }
+        ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
 
         lender.deposit(tranche, amount);
+    }
+
+    function withdraw(uint256 rawAmount, uint8 rawTrancheId) public {
+        uint256 trancheId = rawTrancheId % _getNumberOfTranches();
+        ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
+        uint256 amount = rawAmount % tranche.maxWithdraw(address(lender));
+
+        lender.withdraw(tranche, amount);
     }
 }
