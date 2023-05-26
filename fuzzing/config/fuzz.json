@@ -1,6 +1,6 @@
 {
-  "StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions": "fuzzing/config/StructuredAssetVaultLiveWithLiveActions.yaml",
-  "StructuredAssetVaultFuzzingInvariantsCapitalFormation": "fuzzing/config/StructuredAssetVaultCapitalFormation.yaml",
-  "StructuredAssetVaultFuzzingInvariantsLiveCrytic": "fuzzing/config/StructuredAssetVaultLiveCrytic.yaml",
-  "StructuredAssetVaultFuzzingInvariantsLive": "fuzzing/config/StructuredAssetVaultLive.yaml"
+  "StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions": "fuzzing/config/StructuredAssetVault.yaml",
+  "StructuredAssetVaultFuzzingInvariantsCapitalFormation": "fuzzing/config/StructuredAssetVault.yaml",
+  "StructuredAssetVaultFuzzingInvariantsLiveCrytic": "fuzzing/config/StructuredAssetVault.yaml",
+  "StructuredAssetVaultFuzzingInvariantsLive": "fuzzing/config/StructuredAssetVault.yaml"
 }
