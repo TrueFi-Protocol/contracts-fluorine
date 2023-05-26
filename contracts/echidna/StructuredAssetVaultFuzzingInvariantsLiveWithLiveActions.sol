@@ -11,6 +11,7 @@
 
 pragma solidity ^0.8.18;
 
+import {MAX_TOKENS} from "./StructuredAssetVaultFuzzingInitCapitalFormation.sol";
 import {StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions} from "./StructuredAssetVaultFuzzingInteractionsLiveWithLiveActions.sol";
 import {Status, TrancheData} from "../interfaces/IStructuredAssetVault.sol";
 import {StructuredAssetVault} from "../StructuredAssetVault.sol";
@@ -125,6 +126,56 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
         }
 
         revert();
+    }
+
+    function verify_convertToAssetsIsLinear(
+        uint256 rawTrancheId,
+        uint256 rawA,
+        uint256 rawX,
+        uint256 rawB,
+        uint256 rawY
+    ) external {
+        uint256 trancheId = rawTrancheId % _getNumberOfTranches();
+        ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
+        uint256 a = rawA % 10**(token.decimals() - 1);
+        uint256 b = rawB % 10**(token.decimals() - 1);
+        uint256 x = (rawX % MAX_TOKENS) + 10**token.decimals();
+        uint256 y = (rawY % MAX_TOKENS) + 10**token.decimals();
+        emit LogUint256("scalar a", a);
+        emit LogUint256("shares x", x);
+        emit LogUint256("scalar b", b);
+        emit LogUint256("shares y", y);
+        assertClose(
+            tranche.convertToAssets(a * x + b * y),
+            a * tranche.convertToAssets(x) + b * tranche.convertToAssets(y),
+            "convertToAssets is linear",
+            10**token.decimals()
+        );
+    }
+
+    function verify_convertToSharesIsLinear(
+        uint256 rawTrancheId,
+        uint256 rawA,
+        uint256 rawX,
+        uint256 rawB,
+        uint256 rawY
+    ) external {
+        uint256 trancheId = rawTrancheId % _getNumberOfTranches();
+        ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
+        uint256 a = rawA % 10**(token.decimals() - 1);
+        uint256 b = rawB % 10**(token.decimals() - 1);
+        uint256 x = (rawX % MAX_TOKENS) + 10**token.decimals();
+        uint256 y = (rawY % MAX_TOKENS) + 10**token.decimals();
+        emit LogUint256("scalar a", a);
+        emit LogUint256("assets x", x);
+        emit LogUint256("scalar b", b);
+        emit LogUint256("assets y", y);
+        assertClose(
+            tranche.convertToShares(a * x + b * y),
+            a * tranche.convertToShares(x) + b * tranche.convertToShares(y),
+            "convertToShares is linear",
+            10**token.decimals()
+        );
     }
 
     function _getTranchesData() internal view returns (TrancheData[] memory) {

@@ -38,7 +38,8 @@ import {FuzzingManager} from "./FuzzingManager.sol";
 import {PropertiesAsserts} from "@crytic/properties/contracts/util/PropertiesHelper.sol";
 
 uint256 constant DAY = 1 days;
-uint256 constant MAX_TOKENS = 10e9 * 10**18; // a billion tokens
+uint8 constant DECIMALS = 6;
+uint256 constant MAX_TOKENS = 10e9 * 10**DECIMALS; // a billion tokens
 
 contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     MockToken public token;
@@ -89,9 +90,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     }
 
     function _initializeToken() internal {
-        token = new MockToken(
-            6 /* decimals */
-        );
+        token = new MockToken(DECIMALS);
         token.mint(address(this), 1e6 * 10**token.decimals());
     }
 
@@ -248,5 +247,17 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
         }
         emit LogString("min subordinate ratio satisfied");
         return true;
+    }
+
+    /// @notice asserts that a is equal to b. Violations are logged using reason.
+    function assertClose(
+        uint256 a,
+        uint256 b,
+        string memory reason,
+        uint256 tolerance
+    ) internal {
+        if (a + tolerance < b || b + tolerance < a) {
+            assertEq(a, b, reason);
+        }
     }
 }
