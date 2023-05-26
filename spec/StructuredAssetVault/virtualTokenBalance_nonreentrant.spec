@@ -15,7 +15,8 @@ rule onlyCloseDecreaseAndDisburseDirectlyDecreaseVirtualTokenBalance(method f) f
     assert
         f.selector == close().selector ||
         f.selector == decreaseVirtualTokenBalance(uint256).selector ||
-        f.selector == disburse(address,uint256,uint256,string).selector;
+        f.selector == disburse(address,uint256,string).selector ||
+        f.selector == disburseThenUpdateState(address,uint256,uint256,string).selector;
 }
 
 rule onlyIncreaseAndRepayDirectlyIncreaseVirtualTokenBalance(method f) filtered {
@@ -32,7 +33,8 @@ rule onlyIncreaseAndRepayDirectlyIncreaseVirtualTokenBalance(method f) filtered 
 
     assert // start().selector relies on a tranche call to increaseVTB()
         f.selector == increaseVirtualTokenBalance(uint256).selector ||
-        f.selector == repay(uint256,uint256,uint256,string).selector;
+        f.selector == repay(uint256,uint256,string).selector ||
+        f.selector == updateStateThenRepay(uint256,uint256,uint256,string).selector;
 }
 
 rule closeWhenLiveDecreasesVirtualTokenBalance() {
@@ -78,7 +80,18 @@ rule disburseDecreasesVirtualTokenBalance(uint256 amount) {
     uint256 virtualTokenBalance_old = virtualTokenBalance();
 
     env e;
-    disburse(e, _, amount, _, _);
+    disburse(e, _, amount, _);
+
+    uint256 virtualTokenBalance_new = virtualTokenBalance();
+
+    assert virtualTokenBalance_new == virtualTokenBalance_old - amount;
+}
+
+rule disburseThenUpdateStateDecreasesVirtualTokenBalance(uint256 amount) {
+    uint256 virtualTokenBalance_old = virtualTokenBalance();
+
+    env e;
+    disburseThenUpdateState(e, _, amount, _, _);
 
     uint256 virtualTokenBalance_new = virtualTokenBalance();
 
@@ -102,7 +115,7 @@ rule repayWhenClosedDoesntChangeVirtualTokenBalance() {
     uint256 virtualTokenBalance_old = virtualTokenBalance();
 
     env e;
-    repay(e, _, _, _, _);
+    repay(e, _, _, _);
 
     uint256 virtualTokenBalance_new = virtualTokenBalance();
 
@@ -115,7 +128,33 @@ rule repayWhenNotClosedIncreasesVirtualTokenBalance(uint256 principalRepaid, uin
     uint256 virtualTokenBalance_old = virtualTokenBalance();
 
     env e;
-    repay(e, principalRepaid, interestRepaid, _, _);
+    repay(e, principalRepaid, interestRepaid, _);
+
+    uint256 virtualTokenBalance_new = virtualTokenBalance();
+
+    assert virtualTokenBalance_new == virtualTokenBalance_old + principalRepaid + interestRepaid;
+}
+
+rule updateStateThenRepayWhenClosedDoesntChangeVirtualTokenBalance() {
+    require status() == sav.Status.Closed;
+
+    uint256 virtualTokenBalance_old = virtualTokenBalance();
+
+    env e;
+    updateStateThenRepay(e, _, _, _, _);
+
+    uint256 virtualTokenBalance_new = virtualTokenBalance();
+
+    assert virtualTokenBalance_new == virtualTokenBalance_old;
+}
+
+rule updateStateThenRepayWhenNotClosedIncreasesVirtualTokenBalance(uint256 principalRepaid, uint256 interestRepaid) {
+    require status() != sav.Status.Closed;
+
+    uint256 virtualTokenBalance_old = virtualTokenBalance();
+
+    env e;
+    updateStateThenRepay(e, _, principalRepaid, interestRepaid, _);
 
     uint256 virtualTokenBalance_new = virtualTokenBalance();
 

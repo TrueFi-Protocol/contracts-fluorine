@@ -2,7 +2,6 @@ import "StructuredAssetVault.spec"
 
 methods {
     getCheckpoint() => AUTO
-    pauserAddress() => AUTO
     totalAssets() => AUTO
     totalAssetsBeforeFees() => AUTO
     totalPendingFeesForAssets(uint256) => AUTO
