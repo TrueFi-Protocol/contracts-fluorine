@@ -11,11 +11,18 @@
 
 pragma solidity ^0.8.18;
 
+import {MAX_TOKENS} from "./StructuredAssetVaultFuzzingInitCapitalFormation.sol";
 import {StructuredAssetVaultFuzzingInitLive} from "./StructuredAssetVaultFuzzingInitLive.sol";
 import {DeficitCheckpoint} from "../interfaces/IStructuredAssetVault.sol";
 import {Status} from "../interfaces/IStructuredAssetVault.sol";
 
 uint256 constant DAY = 1 days;
+
+enum OperationVariant {
+    Pessimistic,
+    Expected,
+    Optimistic
+}
 
 contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzzingInitLive {
     uint256 internal previousTotalAssets;
@@ -42,73 +49,32 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
         uint256 rawAmount,
         uint256 rawNewOutstandingAssets,
         string calldata newAssetReportId,
-        bool optimistic
+        OperationVariant variant
     ) public {
         structuredAssetVault.updateCheckpoints();
-        uint256 amount;
-        uint256 newOutstandingAssets;
-        if (!optimistic) {
-            amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
-            newOutstandingAssets = rawNewOutstandingAssets;
-        } else {
-            amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
-            uint256 oldOutstandingAssets = structuredAssetVault.outstandingAssets();
-            uint256 equityValue = equityTranche.totalAssets();
-            (uint256 lowerBound, uint256 upperBound) = _expectedEquityBounds();
-            uint256 totalDeficit = _totalDeficit();
-            uint256 newOutstandingAssetsLowerBound = lowerBound + oldOutstandingAssets + amount - equityValue + totalDeficit;
-            uint256 newOutstandingAssetsUpperBound = upperBound + oldOutstandingAssets + amount - equityValue + totalDeficit;
-            newOutstandingAssets =
-                (rawNewOutstandingAssets % (newOutstandingAssetsUpperBound - newOutstandingAssetsLowerBound)) +
-                newOutstandingAssetsLowerBound;
-        }
+        uint256 amount = (rawAmount % structuredAssetVault.virtualTokenBalance()) + 1;
+        uint256 newOutstandingAssets = _prepareUpdate(rawNewOutstandingAssets, variant) + amount;
         manager.disburseThenUpdateState(structuredAssetVault, address(borrower), amount, newOutstandingAssets, newAssetReportId);
-        if (optimistic) {
+        if (variant == OperationVariant.Expected) {
             assert(_expectedEquityRateMatched());
         }
     }
 
     function updateStateThenRepay(
-        uint256 newOutstandingAssets,
+        uint256 rawNewOutstandingAssets,
         uint256 rawPrincipalRepaid,
         uint256 rawInterestRepaid,
         string calldata newAssetReportId,
-        bool optimistic
+        OperationVariant variant
     ) public {
-        uint256 principalRepaid;
-        uint256 interestRepaid;
-        if (!optimistic) {
-            principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
-            interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
-        } else {
-            principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
-            interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
-            uint256 oldOutstandingAssets = structuredAssetVault.outstandingAssets();
-            uint256 equityValue = equityTranche.totalAssets();
-            (uint256 lowerBound, uint256 upperBound) = _expectedEquityBounds();
-            uint256 totalDeficit = _totalDeficit();
-            uint256 newOutstandingAssetsLowerBound;
-            if (lowerBound + oldOutstandingAssets + totalDeficit > principalRepaid + interestRepaid + equityValue) {
-                newOutstandingAssetsLowerBound =
-                    lowerBound +
-                    oldOutstandingAssets -
-                    principalRepaid -
-                    interestRepaid -
-                    equityValue +
-                    totalDeficit;
-            } else {
-                newOutstandingAssetsLowerBound = 0;
-            }
-            uint256 newOutstandingAssetsUpperBound = upperBound +
-                oldOutstandingAssets -
-                principalRepaid -
-                interestRepaid -
-                equityValue +
-                totalDeficit;
-            newOutstandingAssets %= newOutstandingAssetsUpperBound - newOutstandingAssetsLowerBound;
-            newOutstandingAssets += newOutstandingAssetsLowerBound;
-        }
+        uint256 principalRepaid = rawPrincipalRepaid % structuredAssetVault.outstandingPrincipal();
+        uint256 interestRepaid = rawInterestRepaid % (token.balanceOf(address(manager)) - principalRepaid);
+        uint256 newOutstandingAssets = _prepareUpdate(rawNewOutstandingAssets, variant);
+
         manager.updateStateThenRepay(structuredAssetVault, newOutstandingAssets, principalRepaid, interestRepaid, newAssetReportId);
+        if (variant == OperationVariant.Expected) {
+            assert(_expectedEquityRateMatched());
+        }
     }
 
     function close() public {
@@ -123,5 +89,26 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
         }
 
         return totalDeficit;
+    }
+
+    function _prepareUpdate(uint256 rawNewOutstandingAssets, OperationVariant variant) internal view returns (uint256) {
+        (uint256 lowerBound, uint256 upperBound) = _outstandingAssetsBounds();
+        if (variant == OperationVariant.Pessimistic) {
+            return rawNewOutstandingAssets % lowerBound;
+        } else if (variant == OperationVariant.Expected) {
+            return (rawNewOutstandingAssets % (upperBound - lowerBound)) + lowerBound;
+        } else {
+            return (rawNewOutstandingAssets % MAX_TOKENS) + upperBound;
+        }
+    }
+
+    function _outstandingAssetsBounds() internal view returns (uint256, uint256) {
+        (uint256 _equityLowerBound, uint256 _equityUpperBound) = _expectedEquityBounds();
+        uint256 oldOutstandingAssets = structuredAssetVault.outstandingAssets();
+        uint256 equityValue = equityTranche.totalAssets();
+        uint256 totalDeficit = _totalDeficit();
+        uint256 outstandingAssetsLowerBound = _equityLowerBound + oldOutstandingAssets - equityValue + totalDeficit;
+        uint256 outstandingAssetsUpperBound = _equityUpperBound + oldOutstandingAssets - equityValue + totalDeficit;
+        return (outstandingAssetsLowerBound, outstandingAssetsUpperBound);
     }
 }

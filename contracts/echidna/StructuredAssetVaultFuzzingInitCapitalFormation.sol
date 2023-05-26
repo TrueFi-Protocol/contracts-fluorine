@@ -38,6 +38,7 @@ import {FuzzingManager} from "./FuzzingManager.sol";
 import {PropertiesAsserts} from "@crytic/properties/contracts/util/PropertiesHelper.sol";
 
 uint256 constant DAY = 1 days;
+uint256 constant MAX_TOKENS = 10e9 * 10**18; // a billion tokens
 
 contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     MockToken public token;
