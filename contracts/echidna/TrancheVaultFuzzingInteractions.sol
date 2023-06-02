@@ -15,19 +15,29 @@ import {StructuredAssetVaultFuzzingInitCapitalFormation} from "./StructuredAsset
 import {ITrancheVault} from "../interfaces/ITrancheVault.sol";
 
 contract TrancheVaultFuzzingInteractions is StructuredAssetVaultFuzzingInitCapitalFormation {
-    function deposit(uint256 rawAmount, uint8 rawTrancheId) public {
+    function deposit(
+        uint8 rawTrancheId,
+        uint256 rawAmount,
+        uint8 rawLender
+    ) public {
         uint256 trancheId = rawTrancheId % _getNumberOfTranches();
+        address lender = addresses[rawLender % addresses.length];
         uint256 amount = rawAmount % token.balanceOf(address(lender));
         ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
 
-        lender.deposit(tranche, amount);
+        _depositAs(tranche, lender, amount);
     }
 
-    function withdraw(uint256 rawAmount, uint8 rawTrancheId) public {
+    function withdraw(
+        uint8 rawTrancheId,
+        uint256 rawAmount,
+        uint8 rawLender
+    ) public {
         uint256 trancheId = rawTrancheId % _getNumberOfTranches();
         ITrancheVault tranche = structuredAssetVault.tranches(trancheId);
+        address lender = addresses[rawLender % addresses.length];
         uint256 amount = rawAmount % tranche.maxWithdraw(address(lender));
 
-        lender.withdraw(tranche, amount);
+        _withdrawAs(tranche, lender, amount);
     }
 }

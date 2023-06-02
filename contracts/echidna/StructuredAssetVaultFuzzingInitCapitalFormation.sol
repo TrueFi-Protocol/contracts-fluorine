@@ -31,11 +31,11 @@ import {StructuredAssetVaultTest2} from "../test/StructuredAssetVaultTest2.sol";
 import {AddLoanParams} from "contracts-carbon/contracts/LoansManager.sol";
 import {MockToken} from "contracts-carbon/contracts/mocks/MockToken.sol";
 
-import {FuzzingLender} from "./FuzzingLender.sol";
 import {FuzzingBorrower} from "./FuzzingBorrower.sol";
 import {FuzzingManager} from "./FuzzingManager.sol";
 
 import {PropertiesAsserts} from "@crytic/properties/contracts/util/PropertiesHelper.sol";
+import "@crytic/properties/contracts/util/Hevm.sol";
 
 uint256 constant DAY = 1 days;
 uint8 constant DECIMALS = 6;
@@ -43,7 +43,6 @@ uint256 constant MAX_TOKENS = 10e9 * 10**DECIMALS; // a billion tokens
 
 contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     MockToken public token;
-    FuzzingLender public lender;
     FuzzingBorrower public borrower;
     FuzzingManager public manager;
 
@@ -57,8 +56,12 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     ExpectedEquityRate public expectedEquityRate;
     uint256 internal constant FEE_RATE = (BASIS_PRECISION * 5) / 1000;
 
+    uint256 internal constant ADDRESS_COUNT = 10;
+    address[] public addresses;
+
     constructor() {
         _initializeToken();
+        _initializeAddresses();
         _initializeManager();
         _initializeProtocolConfig();
         _initializeLenderVerifier();
@@ -82,7 +85,6 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
         );
         _initializeAssetVault();
 
-        _initializeLender();
         _initializeBorrower();
 
         _fillTranches();
@@ -92,6 +94,14 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
     function _initializeToken() internal {
         token = new MockToken(DECIMALS);
         token.mint(address(this), 1e6 * 10**token.decimals());
+    }
+
+    function _initializeAddresses() internal {
+        for (uint256 i = 0; i < ADDRESS_COUNT; i++) {
+            address newAddress = address(uint160(i + 1));
+            token.mint(newAddress, 1e10 * 10**token.decimals());
+            addresses.push(newAddress);
+        }
     }
 
     function _initializeManager() internal {
@@ -200,20 +210,35 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
         );
     }
 
-    function _initializeLender() internal {
-        lender = new FuzzingLender();
-        token.mint(address(lender), 1e10 * 10**token.decimals());
-    }
-
     function _initializeBorrower() internal {
         borrower = new FuzzingBorrower();
         token.mint(address(borrower), 1e10 * 10**token.decimals());
     }
 
+    function _depositAs(
+        ITrancheVault tranche,
+        address lender,
+        uint256 amount
+    ) internal {
+        hevm.prank(lender);
+        token.approve(address(tranche), amount);
+        hevm.prank(lender);
+        tranche.deposit(amount, lender);
+    }
+
+    function _withdrawAs(
+        ITrancheVault tranche,
+        address lender,
+        uint256 amount
+    ) internal {
+        hevm.prank(lender);
+        tranche.withdraw(amount, lender, lender);
+    }
+
     function _fillTranches() internal {
-        lender.deposit(ITrancheVault(address(equityTranche)), 2e6 * 10**token.decimals());
-        lender.deposit(ITrancheVault(address(juniorTranche)), 3e6 * 10**token.decimals());
-        lender.deposit(ITrancheVault(address(seniorTranche)), 5e6 * 10**token.decimals());
+        _depositAs(equityTranche, addresses[0], 2e6 * 10**token.decimals());
+        _depositAs(juniorTranche, addresses[1], 3e6 * 10**token.decimals());
+        _depositAs(seniorTranche, addresses[2], 5e6 * 10**token.decimals());
     }
 
     function _repayerApproveVault() internal {
