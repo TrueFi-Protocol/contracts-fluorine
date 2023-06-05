@@ -30,7 +30,7 @@ export const config: Config = {
     },
     optimism_goerli: {
       defaultProtocolFeeRate: 0,
-      protocolAdmin: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
+      protocolAdmin: '0xBf116e1137f7C1067D5c27547d94d493fdC82d44',
       protocolTreasury: '0x715C72ea89CD250890714467963b0F9774FF2520',
       pauserAddress: '0x715C72ea89CD250890714467963b0F9774FF2520'
     },
