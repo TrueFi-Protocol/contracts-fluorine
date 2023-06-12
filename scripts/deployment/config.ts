@@ -36,7 +36,7 @@ export const config: Config = {
     },
     goerli: {
       defaultProtocolFeeRate: 50,
-      protocolAdmin: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
+      protocolAdmin: '0xBf116e1137f7C1067D5c27547d94d493fdC82d44',
       protocolTreasury: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
       pauserAddress: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
     },

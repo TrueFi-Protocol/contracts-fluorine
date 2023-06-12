@@ -1,0 +1,49 @@
+{
+  "goerli": {
+    "structuredAssetVault": {
+      "txHash": "0x4c0aae6bbe18f481de2c7554334c65d4c7c2592d9ffb4053694f7ae3d13c0fe4",
+      "address": "0x85D9D426E140a5Ee8e76faDD7C378aa2AA6C9B39",
+      "multisig": false
+    },
+    "fluorine_TrancheVault": {
+      "txHash": "0x8f4f7970cc10343fd8b6ae7b39e3f24e03706d1ccbc6eb33835c6bb17a42052b",
+      "address": "0x261eE50b90Eb18364A9De8e241E95cC5b9cE0456",
+      "multisig": false
+    },
+    "fluorine_protocolConfig": {
+      "txHash": "0xcb74314d95119089fcac339c32023b4373baa6ec28dffeb46fd217b0be1b42c7",
+      "address": "0xa59422Ca1EB2d5cD49451b160431A400e05aB99d",
+      "multisig": false
+    },
+    "fluorine_protocolConfig_proxy": {
+      "txHash": "0xfb622fbe1a952024fe82779f06342a8db6b42e69611ad8e9b3e9ccead6aa98a2",
+      "address": "0x5Ccd70188b34B8F1285CF0e1a7223817bE71e5AA",
+      "multisig": false
+    },
+    "structuredAssetVaultFactory": {
+      "txHash": "0xa3a1fc3e08429df0ab95577d171badc1fd11e6087d895def6a5058bc00ace953",
+      "address": "0x0d1a48b7823b1D4C2e394c1B81A8F5DB95168036",
+      "multisig": false
+    },
+    "fluorine_defaultDepositController": {
+      "txHash": "0x96aaf4fa465f8b4ccb8cbf11f7786248c506ead29d02d9f1261b90c7ed2dfdea",
+      "address": "0x05FE0fCe45392ae6C6717C50Cf5d2e8Ba855E94e",
+      "multisig": false
+    },
+    "fluorine_defaultWithdrawController": {
+      "txHash": "0x16df7ce8ec251f527808cc4f64c00eac676d08298ef276f5b6c1ba420ab648f1",
+      "address": "0x39de557E12230E32769Ed5dbB9d3a2c18F911283",
+      "multisig": false
+    },
+    "fluorine_defaultTransferController": {
+      "txHash": "0x0de1188020d4ecba765226936bf91a001b8d0b02e3c3c79f79d7c2b7ffb0998a",
+      "address": "0xA5CaA262c176d25e019300157CFf4ed14377A856",
+      "multisig": false
+    },
+    "allowAllLenderVerifier": {
+      "txHash": "0xbaa9cfb2605090f6595c07071866ea4c180fede7e1be742d36b859f59f57a603",
+      "address": "0x2852ACCc69Bf181c996174a5ddBe1965C923Ad12",
+      "multisig": false
+    }
+  }
+}
