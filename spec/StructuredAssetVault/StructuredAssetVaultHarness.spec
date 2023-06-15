@@ -1,7 +1,10 @@
 using StructuredAssetVaultHarness as savh
+using TrancheVaultWrapper as tvw
 
 methods {
     assetBalance() returns uint256 envfree
+    tranches(uint256) returns address envfree
+    tranchesLength() returns uint256 envfree
     virtualTokenBalance() returns uint256 envfree
 }
 

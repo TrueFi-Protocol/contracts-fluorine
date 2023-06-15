@@ -16,4 +16,8 @@ contract StructuredAssetVaultHarness is StructuredAssetVault {
     function assetBalance() external view returns (uint256) {
         return asset.balanceOf(address(this));
     }
+
+    function tranchesLength() external view returns (uint256) {
+        return tranches.length;
+    }
 }
