@@ -6,6 +6,7 @@ import { MONTH, YEAR } from 'utils/constants'
 import { timePassedBetween } from 'utils/timestamp'
 import { timeTravel, timeTravelAndMine, timeTravelFrom, timeTravelTo } from 'utils/timeTravel'
 import { getInterest, withInterest } from 'utils/interest'
+import { constants } from 'ethers'
 
 describe('StructuredAssetVault.disburse', () => {
   const loadFixture = setupFixtureLoader()
@@ -23,6 +24,13 @@ describe('StructuredAssetVault.disburse', () => {
     await expect(
       assetVault.disburseThenUpdateState(assetVault.address, principal, principal, assetReportId)
     ).to.be.revertedWith('SAV: Recipient cannot be SAV')
+  })
+
+  it('reverts when sent to zero address', async () => {
+    const { assetVault, assetReportId } = await loadFixture(assetVaultLiveFixture)
+    await expect(
+      assetVault.disburseThenUpdateState(constants.AddressZero, principal, principal, assetReportId)
+    ).to.be.revertedWith('SAV: Recipient zero address')
   })
 
   it('can send only to allowed borrower when whitelist is enabled', async () => {

@@ -460,6 +460,7 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
     ) public override whenNotPaused {
         _requireManagerRole();
         require(recipient != address(this), "SAV: Recipient cannot be SAV");
+        require(recipient != address(0), "SAV: Recipient zero address");
         if (onlyAllowedBorrowers) {
             require(hasRole(BORROWER_ROLE, recipient), "SAV: Recipient not whitelisted");
         }
