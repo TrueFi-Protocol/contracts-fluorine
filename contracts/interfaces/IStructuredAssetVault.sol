@@ -25,13 +25,6 @@ enum Status {
     Closed
 }
 
-struct DeficitCheckpoint {
-    /// @dev Tranche missing funds due to lost outstanding assets
-    uint256 deficit;
-    /// @dev Timestamp of checkpoint
-    uint256 timestamp;
-}
-
 struct TrancheData {
     /// @dev The APY expected to be granted at the end of the AssetVault Live phase (in BPS)
     uint128 targetApy;
@@ -41,8 +34,6 @@ struct TrancheData {
     uint256 distributedAssets;
     /// @dev The potential maximum amount of tranche assets available to withdraw after close() was called
     uint256 maxValueOnClose;
-    /// @dev Checkpoint tracking how many assets should be returned to the tranche due to lost outstanding assets
-    DeficitCheckpoint deficitCheckpoint;
 }
 
 struct TrancheInitData {
@@ -252,6 +243,13 @@ interface IStructuredAssetVault is IAccessControlUpgradeable {
      * @dev Can be executed only in Live and Closed status
      */
     function updateCheckpoints() external;
+
+    function calculateDeficit(
+        uint256 i,
+        uint256 realTotalAssets,
+        uint256 pendingFees,
+        uint256 unpaidFees
+    ) external view returns (uint256);
 
     /// @return Total value locked in the contract including yield from outstanding assets
     function totalAssets() external view returns (uint256);

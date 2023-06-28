@@ -326,6 +326,7 @@ describe('StructuredAssetVault.updateCheckpoints', () => {
         junior,
         senior,
         depositToTranche,
+        tranches,
       } = await loadFixture(assetVaultLiveFixture)
 
       // drain equity tranche and small amount from junior to cause deficit on default
@@ -343,25 +344,28 @@ describe('StructuredAssetVault.updateCheckpoints', () => {
       await timeTravelAndMine(2 * YEAR)
 
       const seniorInterest = getInterest(senior.initialDeposit, senior.targetApy, 2 * YEAR)
+      const juniorInterest = withInterest(junior.initialDeposit, junior.targetApy, 2 * YEAR).sub(junior.initialDeposit)
       const expectedJuniorBeforeFees = junior.initialDeposit.sub(seniorInterest)
       const expectedJuniorFees = getInterest(expectedJuniorBeforeFees, protocolFeeRate, 2 * YEAR)
 
       const delta = parseTokenUnits('0.01')
 
+      const expectedDeficit = seniorInterest.add(juniorInterest)
+
       expect(await juniorTranche.pendingProtocolFee()).to.be.closeTo(expectedJuniorFees, delta)
-      let { deficit } = (await assetVault.tranchesData(1)).deficitCheckpoint
+      let { deficit } = await tranches[1].getCheckpoint()
       expect(deficit).to.be.gt(0)
       expect(deficit).to.be.lt(parseTokenUnits(0.2))
 
       await depositToTranche(juniorTranche, parseTokenUnits(6e6))
-      ;({ deficit } = (await assetVault.tranchesData(1)).deficitCheckpoint)
-      expect(deficit).to.be.gt(0)
-      expect(deficit).to.be.lt(parseTokenUnits(0.2))
+      ;({ deficit } = await tranches[1].getCheckpoint())
+      expect(deficit).to.be.gt(expectedDeficit)
+      expect(deficit).to.be.lt(parseTokenUnits(0.2).add(expectedDeficit))
 
       await assetVault.updateCheckpoints()
-      ;({ deficit } = (await assetVault.tranchesData(1)).deficitCheckpoint)
-      expect(deficit).to.be.gt(0)
-      expect(deficit).to.be.lt(parseTokenUnits(0.2))
+      ;({ deficit } = await tranches[1].getCheckpoint())
+      expect(deficit).to.be.gt(expectedDeficit)
+      expect(deficit).to.be.lt(parseTokenUnits(0.2).add(expectedDeficit))
     })
 
     it('fees calculated correctly with deficit', async () => {
@@ -390,10 +394,7 @@ describe('StructuredAssetVault.updateCheckpoints', () => {
       const seniorAssumedValueFee = getInterest(seniorAssumedValue, protocolFeeRate, timePassed)
       const seniorAssumedValueAfterFee = seniorAssumedValue.sub(seniorAssumedValueFee)
 
-      expect('updateCheckpointFromPortfolio').to.be.calledOnContractWith(seniorTranche, [
-        seniorAssumedValueAfterFee,
-        await senior.getCurrentDeficit(),
-      ])
+      expect('updateCheckpointFromPortfolio').to.be.calledOnContractWith(seniorTranche, [seniorAssumedValueAfterFee])
       expect(await seniorTranche.unpaidProtocolFee()).to.eq(seniorAssumedValueFee)
     })
 

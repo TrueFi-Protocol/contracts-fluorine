@@ -12,7 +12,7 @@
 pragma solidity ^0.8.18;
 
 import {StructuredAssetVaultFuzzingInteractionsLive} from "./StructuredAssetVaultFuzzingInteractionsLive.sol";
-import {BASIS_PRECISION, YEAR, DeficitCheckpoint} from "../interfaces/IStructuredAssetVault.sol";
+import {BASIS_PRECISION, YEAR} from "../interfaces/IStructuredAssetVault.sol";
 import {Status, TrancheData} from "../interfaces/IStructuredAssetVault.sol";
 import {StructuredAssetVault} from "../StructuredAssetVault.sol";
 import {ITrancheVault, Checkpoint} from "../interfaces/ITrancheVault.sol";
@@ -32,10 +32,11 @@ contract StructuredAssetVaultFuzzingInvariantsLive is StructuredAssetVaultFuzzin
 
         structuredAssetVault.updateCheckpoints();
 
-        (, , , , DeficitCheckpoint memory deficit) = structuredAssetVault.tranchesData(trancheId);
-        require(deficit.deficit > 0);
+        ITrancheVault[] memory tranches = structuredAssetVault.getTranches();
+        Checkpoint memory checkpoint = tranches[rawTrancheId].getCheckpoint();
+        require(checkpoint.deficit > 0);
 
-        emit LogUint256("deficit", deficit.deficit);
+        emit LogUint256("deficit", checkpoint.deficit);
 
         for (uint256 i = 0; i < trancheId; i++) {
             assertEq(structuredAssetVault.tranches(i).totalAssets(), 0, "tranches below deficit are empty");

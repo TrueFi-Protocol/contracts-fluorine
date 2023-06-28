@@ -36,11 +36,9 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
     function verify_updateCheckpointsContinuous() public {
         uint256[] memory waterfall_old = structuredAssetVault.calculateWaterfall();
         structuredAssetVault.updateCheckpoints();
-        TrancheData[] memory trancheData_old = _getTranchesData();
         Checkpoint[] memory trancheCheckpoints_old = _getTrancheCheckpoints();
         structuredAssetVault.updateCheckpoints();
         uint256[] memory waterfall_new = structuredAssetVault.calculateWaterfall();
-        TrancheData[] memory trancheData_new = _getTranchesData();
         Checkpoint[] memory trancheCheckpoints_new = _getTrancheCheckpoints();
 
         for (uint256 i = 0; i < waterfall_old.length; i++) {
@@ -48,13 +46,13 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
             assertEq(waterfall_new[i], waterfall_old[i], "waterfall value is equal before and after update");
 
             assertEq(
-                trancheData_new[i].deficitCheckpoint.deficit,
-                trancheData_old[i].deficitCheckpoint.deficit,
+                trancheCheckpoints_new[i].deficit,
+                trancheCheckpoints_old[i].deficit,
                 "deficit value is preserved after subsequent update"
             );
             assertEq(
-                trancheData_new[i].deficitCheckpoint.timestamp,
-                trancheData_old[i].deficitCheckpoint.timestamp,
+                trancheCheckpoints_new[i].timestamp,
+                trancheCheckpoints_new[i].timestamp,
                 "deficit timestamp is preserved after subsequent update"
             );
 
@@ -176,17 +174,6 @@ contract StructuredAssetVaultFuzzingInvariantsLiveWithLiveActions is StructuredA
             "convertToShares is linear",
             10**token.decimals()
         );
-    }
-
-    function _getTranchesData() internal view returns (TrancheData[] memory) {
-        ITrancheVault[] memory trancheVaults = structuredAssetVault.getTranches();
-        TrancheData[] memory tranchesData = new TrancheData[](trancheVaults.length);
-
-        for (uint256 i = 0; i < trancheVaults.length; i++) {
-            tranchesData[i] = structuredAssetVault.getTrancheData(i);
-        }
-
-        return tranchesData;
     }
 
     function _getTrancheCheckpoints() internal view returns (Checkpoint[] memory) {

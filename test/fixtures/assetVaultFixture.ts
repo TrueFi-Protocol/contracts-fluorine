@@ -68,7 +68,7 @@ export const getAssetVaultFixture = (fixtureConfig?: Partial<FixtureConfig>) => 
       (trancheData, idx): FixtureTrancheData => ({
         ...trancheData,
         trancheIdx: idx,
-        getCurrentDeficit: async () => (await assetVault.getTrancheData(idx)).deficitCheckpoint.deficit,
+        getCurrentDeficit: async () => (await tranches[idx].getCheckpoint()).deficit,
       })
     )
 

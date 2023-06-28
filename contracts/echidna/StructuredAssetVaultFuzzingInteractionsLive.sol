@@ -13,8 +13,8 @@ pragma solidity ^0.8.18;
 
 import {MAX_TOKENS} from "./StructuredAssetVaultFuzzingInitCapitalFormation.sol";
 import {StructuredAssetVaultFuzzingInitLive} from "./StructuredAssetVaultFuzzingInitLive.sol";
-import {DeficitCheckpoint} from "../interfaces/IStructuredAssetVault.sol";
 import {Status} from "../interfaces/IStructuredAssetVault.sol";
+import {Checkpoint, ITrancheVault} from "../interfaces/ITrancheVault.sol";
 
 uint256 constant DAY = 1 days;
 
@@ -83,8 +83,9 @@ contract StructuredAssetVaultFuzzingInteractionsLive is StructuredAssetVaultFuzz
 
     function _totalDeficit() internal view returns (uint256) {
         uint256 totalDeficit = 0;
+        ITrancheVault[] memory tranches = structuredAssetVault.getTranches();
         for (uint256 i = 1; i < _getNumberOfTranches(); i++) {
-            (, , , , DeficitCheckpoint memory checkpoint) = structuredAssetVault.tranchesData(i);
+            Checkpoint memory checkpoint = tranches[i].getCheckpoint();
             totalDeficit += checkpoint.deficit;
         }
 

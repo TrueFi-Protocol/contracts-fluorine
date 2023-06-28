@@ -259,7 +259,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
             uint256 trancheValue = tranche.totalAssets();
             emit LogUint256("tranche value", trancheValue);
 
-            (, uint128 minSubordinateRatio, , , ) = structuredAssetVault.tranchesData(i);
+            (, uint128 minSubordinateRatio, , ) = structuredAssetVault.tranchesData(i);
 
             if (subordinateValue * BASIS_PRECISION < trancheValue * minSubordinateRatio) {
                 emit LogString("min subordinate ratio not satisfied");
