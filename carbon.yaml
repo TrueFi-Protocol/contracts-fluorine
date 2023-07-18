@@ -4,5 +4,5 @@ MockLenderVerifier
 ProtocolConfig
 TrancheVault
 TrancheVaultTest
-TransferController
+TransferEnabledController
 WithdrawController

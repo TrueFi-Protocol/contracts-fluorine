@@ -25,7 +25,7 @@ import {ProtocolConfigTest} from "contracts-carbon/contracts/test/ProtocolConfig
 import {AllowAllLenderVerifier} from "contracts-carbon/contracts/lenderVerifiers/AllowAllLenderVerifier.sol";
 import {DepositController} from "contracts-carbon/contracts/controllers/DepositController.sol";
 import {WithdrawController} from "contracts-carbon/contracts/controllers/WithdrawController.sol";
-import {TransferController} from "contracts-carbon/contracts/controllers/TransferController.sol";
+import {TransferEnabledController} from "contracts-carbon/contracts/controllers/TransferEnabledController.sol";
 import {StructuredAssetVault, Status} from "../StructuredAssetVault.sol";
 import {StructuredAssetVaultTest2} from "../test/StructuredAssetVaultTest2.sol";
 import {AddLoanParams} from "contracts-carbon/contracts/LoansManager.sol";
@@ -147,7 +147,7 @@ contract StructuredAssetVaultFuzzingInitCapitalFormation is PropertiesAsserts {
             10**token.decimals() /* _floor */
         );
         manager.setWithdrawAllowed(IWithdrawController(address(withdrawController)), true, Status.Live);
-        TransferController transferController = new TransferController();
+        TransferEnabledController transferController = new TransferEnabledController();
 
         ITrancheVault tranche = ITrancheVault(
             address(

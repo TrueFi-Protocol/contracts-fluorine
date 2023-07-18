@@ -2,7 +2,7 @@ import { FluorineDeployResult } from '../deployment/deployFluorine'
 import { contract, NumberLike, reduce } from 'ethereum-mars'
 import { Address } from 'ethereum-mars/build/src/symbols'
 import { MockToken } from '../../build/artifacts'
-import { DepositController__factory, WithdrawController__factory, TransferController__factory } from '../../build/types'
+import { DepositController__factory, WithdrawController__factory, TransferEnabledController__factory } from '../../build/types'
 import { utils } from 'ethers'
 
 interface PortfolioParams {
@@ -38,7 +38,7 @@ export function deployPlayground({ structuredPortfolioFactory, defaultDepositCon
         withdrawControllerImplementation,
         withdrawControllerInitData: new WithdrawController__factory().interface.encodeFunctionData('initialize', [deployer, 0, 0]),
         transferControllerImplementation,
-        transferControllerInitData: new TransferController__factory().interface.encodeFunctionData('initialize', [deployer]),
+        transferControllerInitData: new TransferEnabledController__factory().interface.encodeFunctionData('initialize', [deployer]),
         targetApy: 0,
         minSubordinateRatio: 0,
         managerFeeRate: 100,
@@ -51,7 +51,7 @@ export function deployPlayground({ structuredPortfolioFactory, defaultDepositCon
         withdrawControllerImplementation,
         withdrawControllerInitData: new WithdrawController__factory().interface.encodeFunctionData('initialize', [deployer, 0, 0]),
         transferControllerImplementation,
-        transferControllerInitData: new TransferController__factory().interface.encodeFunctionData('initialize', [deployer]),
+        transferControllerInitData: new TransferEnabledController__factory().interface.encodeFunctionData('initialize', [deployer]),
         targetApy: 500,
         minSubordinateRatio: 1000,
         managerFeeRate: 75,
@@ -64,7 +64,7 @@ export function deployPlayground({ structuredPortfolioFactory, defaultDepositCon
         withdrawControllerImplementation,
         withdrawControllerInitData: new WithdrawController__factory().interface.encodeFunctionData('initialize', [deployer, 0, 0]),
         transferControllerImplementation,
-        transferControllerInitData: new TransferController__factory().interface.encodeFunctionData('initialize', [deployer]),
+        transferControllerInitData: new TransferEnabledController__factory().interface.encodeFunctionData('initialize', [deployer]),
         targetApy: 300,
         minSubordinateRatio: 1000,
         managerFeeRate: 50,

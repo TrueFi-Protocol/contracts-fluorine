@@ -1,4 +1,4 @@
-import { StructuredAssetVaultFactory, StructuredAssetVault, TrancheVault, DepositController, WithdrawController, TransferController, AllowAllLenderVerifier } from '../../build/artifacts'
+import { StructuredAssetVaultFactory, StructuredAssetVault, TrancheVault, DepositController, WithdrawController, TransferEnabledController, AllowAllLenderVerifier } from '../../build/artifacts'
 import { contract, ExecuteOptions } from 'ethereum-mars'
 import { deployProtocolConfig } from './deployProtocolConfig'
 import { MarsContract } from 'deployments-utils'
@@ -12,7 +12,7 @@ export function deployFluorine(_: string, { networkName }: ExecuteOptions) {
   const structuredPortfolioFactory = contract(StructuredAssetVaultFactory, [structuredPortfolio, tranche, protocolConfig])
   const defaultDepositController = contract('fluorine_defaultDepositController', DepositController)
   const defaultWithdrawController = contract('fluorine_defaultWithdrawController', WithdrawController)
-  const defaultTransferController = contract('fluorine_defaultTransferController', TransferController)
+  const defaultTransferController = contract('fluorine_defaultTransferController', TransferEnabledController)
   const allowAllLenderVerifier = contract(AllowAllLenderVerifier)
 
   const isTestnet = networkName !== 'mainnet' && networkName !== 'optimism'
