@@ -1,0 +1,54 @@
+{
+  "mainnet": {
+    "structuredAssetVault": {
+      "txHash": "0x883d110b8b0823c3dddb23eeaed6cd89853ebae4b94f3db89974dec3783e6b53",
+      "address": "0xa47fabf6A2897bE0F9d49D792AA908da5031d76b",
+      "multisig": false
+    },
+    "fluorine_TrancheVault": {
+      "txHash": "0x0d8ff521d6bd91af0b8a768520cd07acfae0a68098696499d41c6f6ca4be0ab1",
+      "address": "0x89b9b6d707A272599031D04f64fB1Bb1E33d11Ca",
+      "multisig": false
+    },
+    "fluorine_protocolConfig": {
+      "txHash": "0x3cc8c4a68d0e55ef5d11fa2b126152b24ddcf51ef98463b6b860ee85822327b0",
+      "address": "0xaffe61106b197cab8Fa811ec548B8da7e3e1FdA8",
+      "multisig": false
+    },
+    "fluorine_protocolConfig_proxy": {
+      "txHash": "0x20d6951dd8754222e38bb64996c8853e41be09f16766944311cd40b250c34cd9",
+      "address": "0xb037169e8d88C00f29d1398872364C81D76aA77c",
+      "multisig": false
+    },
+    "structuredAssetVaultFactory": {
+      "txHash": "0x20d6951dd8754222e38bb64996c8853e41be09f16766944311cd40b250c34cd9",
+      "address": "0x5Def383172C7dFB6F937e32aDf5be4D252168eDA",
+      "multisig": false
+    },
+    "fluorine_defaultDepositController": {
+      "txHash": "0x99cd1838e87fa28c06e02d7bcacc0b23b38a6498527af05975495d5faec9a73e",
+      "address": "0x0701ADF5d388b92621351621e75925a5380ae894",
+      "multisig": false
+    },
+    "fluorine_defaultWithdrawController": {
+      "txHash": "0x1ffafb342249d47e5a9e526405f36ddfee9bd0bca7126edb261a4c7719d90d44",
+      "address": "0x3AfCa12D0791e294d88A02ca74b67C0f81e2b01f",
+      "multisig": false
+    },
+    "fluorine_defaultTransferController": {
+      "txHash": "0xab1e1ed7fa10c2125f33b7afd2e22f44a205fa2bbf74bc95b6d000f4da45ce93",
+      "address": "0xeC60E11F629CAD3239c76F736803B409892D7608",
+      "multisig": false
+    },
+    "fluorine_disabledTransferController": {
+      "txHash": "0xea9837c0d92c56b46c4420ac1b1a1571933bacc0a8275039109f789f8ffc3d17",
+      "address": "0x477Ff9709A9C7C31837E92993972101D56b3938E",
+      "multisig": false
+    },
+    "allowAllLenderVerifier": {
+      "txHash": "0x6d5d0db41396a2db84d1508e63f9fb193855f1f4bbd0b718ef299972a8305e71",
+      "address": "0xebE580D4467454D1aB7e768aa250921dc6Ae38Da",
+      "multisig": false
+    }
+  }
+}
