@@ -115,10 +115,6 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
     }
 
     function totalAssets() external view returns (uint256) {
-        if (status == Status.Live) {
-            uint256 _totalPendingFees = totalPendingFees();
-            return _saturatingSub(_totalAssetsBeforeFees(), _totalPendingFees);
-        }
         return _sum(_tranchesTotalAssets());
     }
 
