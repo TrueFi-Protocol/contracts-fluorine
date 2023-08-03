@@ -114,13 +114,19 @@ contract StructuredAssetVault is IStructuredAssetVault, Upgradeable {
         return tranchesData[i];
     }
 
-    function totalAssets() external view returns (uint256) {
+    function totalAssets() public view returns (uint256) {
         return _sum(_tranchesTotalAssets());
     }
 
-    function liquidAssets() external view returns (uint256) {
-        uint256 _totalPendingFees = totalPendingFees();
-        return _saturatingSub(virtualTokenBalance, _totalPendingFees);
+    function liquidAssets() public view returns (uint256) {
+        if (status != Status.Live) {
+            return 0;
+        }
+        return _saturatingSub(virtualTokenBalance, _totalPayableFees());
+    }
+
+    function _totalPayableFees() internal view returns (uint256) {
+        return _totalAssetsBeforeFees() - totalAssets();
     }
 
     function latestAssetReportId() external view returns (string memory) {
