@@ -7,32 +7,9 @@ RE_VIOLATED_SANITY='.*Violated.*_sanity.*'
 
 RE="(${RE_VERIFIED_NOT_SANITY})|(${RE_VIOLATED_SANITY})"
 
-extract_version() {
-    local text="$1"
-
-    BASH_REMATCH=""
-    [[ "${text}" =~ [0-9\.]+ ]]
-    echo "${BASH_REMATCH}"
-}
-
-freeze_latest_pip_requirements() {
-    while read line ; do
-        local latest_version="$(extract_version "$(pip3 index versions $line)")"
-        if [[ -z "$latest_version" ]]; then
-            echo "$line"
-        else
-            echo "$line==$latest_version"
-        fi
-    done
-}
-
 build_docker() {
     mkdir -p build
-
-    jq '{ dependencies: (.dependencies // {}), devDependencies: (.devDependencies // {}) }' package.json > ./build/package-extracted-deps.json
-    freeze_latest_pip_requirements <spec/docker/requirements.txt >./build/requirements-frozen.txt
-
-    docker build -f spec/docker/Dockerfile . -t verify_fluorine
+    docker build -f spec/docker/Dockerfile ../.. -t verify_fluorine
 }
 
 build_confs() {

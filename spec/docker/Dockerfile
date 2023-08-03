@@ -18,21 +18,18 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 RUN npm install -g pnpm@6.20.3
 
-WORKDIR /root
+ADD . /root/truefi
 
-ADD ./build/package-extracted-deps.json package.json
-RUN pnpm install && rm package.json
+WORKDIR /root/truefi/packages/contracts-fluorine/
 
-ADD ./build/requirements-frozen.txt requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pnpm install
 
-ADD spec/docker/setup.sh .
-ADD .compiler.json .
+RUN mkdir build
+RUN bash spec/freeze_latest_pip_requirements.sh
+RUN pip install --no-cache-dir -r build/requirements-frozen.txt
 
-RUN bash setup.sh
+RUN pnpm build:verify
 
-ADD contracts contracts
-ADD spec spec
-ADD package.json .
+RUN bash spec/docker/setup.sh
 
 ENTRYPOINT [ "certoraRun" ]
