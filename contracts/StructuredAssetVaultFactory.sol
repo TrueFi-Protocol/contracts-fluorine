@@ -78,9 +78,19 @@ contract StructuredAssetVaultFactory is IStructuredAssetVaultFactory, AccessCont
         TrancheData[] calldata tranchesData,
         ExpectedEquityRate calldata expectedEquityRate,
         bool onlyAllowedBorrowers
-    ) external {
+    ) external virtual {
+        require(hasRole(WHITELISTED_MANAGER_ROLE, msg.sender), "SAVF: Only whitelisted manager");
+        _createAssetVault(asset, assetVaultParams, tranchesData, expectedEquityRate, onlyAllowedBorrowers);
+    }
+
+    function _createAssetVault(
+        IERC20WithDecimals asset,
+        AssetVaultParams calldata assetVaultParams,
+        TrancheData[] calldata tranchesData,
+        ExpectedEquityRate calldata expectedEquityRate,
+        bool onlyAllowedBorrowers
+    ) internal {
         address manager = msg.sender;
-        require(hasRole(WHITELISTED_MANAGER_ROLE, manager), "SAVF: Only whitelisted manager");
 
         (TrancheInitData[] memory tranchesInitData, ITrancheVault[] memory tranches) = _deployTranches(asset, tranchesData);
 
