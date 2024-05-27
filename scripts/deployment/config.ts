@@ -45,6 +45,12 @@ export const config: Config = {
       protocolAdmin: '0xe13610d0a3e4303c70791773C5DF8Bb16de185d1',
       protocolTreasury: '0x715C72ea89CD250890714467963b0F9774FF2520',
       pauserAddress: '0x715C72ea89CD250890714467963b0F9774FF2520'
+    },
+    sepolia: {
+      defaultProtocolFeeRate: 0,
+      protocolAdmin: '0x7F6733Ce45570105b60B4c49C029f8d4acC2A751',
+      protocolTreasury: '0x7F6733Ce45570105b60B4c49C029f8d4acC2A751',
+      pauserAddress: '0x7F6733Ce45570105b60B4c49C029f8d4acC2A751'
     }
   },
 }

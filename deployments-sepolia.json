@@ -1,0 +1,50 @@
+{
+    "sepolia": {
+      "structuredAssetVault": {
+        "txHash": "0x5d45189be4898830d3a9f5c24be81317b7cf2c8177897f315d26a7850fbffed2",
+        "address": "0x47A79023f381593e0bed8320d6b457bc08a57d2b",
+        "multisig": false
+      },
+      "fluorine_TrancheVault": {
+        "txHash": "0x72fe177abd4c2e0277d0983cec6fd091e11d2cf3a2c10ee44d5be1e04067a77b",
+        "address": "0xE0a7750dE1589dBF25b1420a6fA5740E99236838",
+        "multisig": false
+      },
+      "fluorine_protocolConfig": {
+        "txHash": "0xe54cf33499d34ebce4849e46f349da9d361bdbe0aca30136e416bb33d665384a",
+        "address": "0x871f627e0eF584C05cBCbDde69AEBB088aBB8ad9",
+        "multisig": false
+      },
+      "fluorine_protocolConfig_proxy": {
+        "txHash": "0xa2b7ef8e81658fe140ccaebbaeb4d9b9e0fe45709c1f90cabc0d5d720c507802",
+        "address": "0x06d01107BE54f6A4c5DeC8Ef652D7B29ABAA00c6",
+        "multisig": false
+      },
+      "structuredAssetVaultFactory": {
+        "txHash": "0xc29183b318ba9470759151fee8ba6977fab565aa5be3bfb1f24fc739500c3c06",
+        "address": "0x5E43437ff2f3585372f8c7bAA7dC9db0bfAf0E5D",
+        "multisig": false
+      },
+      "fluorine_defaultDepositController": {
+        "txHash": "0x9107fb02d85e7ef5415afdddac15e6f5febe0048681a719c392d27f06e11d77a",
+        "address": "0xd67A3380E46b4A71358ec56FF3097dCB2EA347DA",
+        "multisig": false
+      },
+      "fluorine_defaultWithdrawController": {
+        "txHash": "0xb2b987ac85dc32a1834461e8a782b5ad3b7b329e0b7c2ffbdfbe2a999484e49d",
+        "address": "0x7Aaa5fB71FdD142dC28fAad0b68D6d47665123Ef",
+        "multisig": false
+      },
+      "fluorine_defaultTransferController": {
+        "txHash": "0x1a136fcb9881e37322b1e54a7dd46b742113a40d6e39e2cbdb2dcde8506e61be",
+        "address": "0xBd11f883C7CF290705B4AF8a77EA48C19F46A76c",
+        "multisig": false
+      },
+      "allowAllLenderVerifier": {
+        "txHash": "0x07d485f144818fbcdb16aa090df53b47f32e8bc2d7256f288a20e6fdd2dc59e5",
+        "address": "0x2cc6ad28661e665465034f708e801fcb22E10026",
+        "multisig": false
+      }
+    }
+  }
+  
